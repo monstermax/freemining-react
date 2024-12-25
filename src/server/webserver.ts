@@ -21,7 +21,7 @@ export async function startWebserver({httpPort, staticDir}: WebserverOptions={})
     // ATTACH PUBLIC DIR
     app.use(express.static(staticDir));
     app.use(express.json({limit: '10mb'}));
-    app.use(express.urlencoded({ limit: '10mb', extended: true }));
+    //app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
     // ATTACH OUR ROUTES
     routes(app);
