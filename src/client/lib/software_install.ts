@@ -6,21 +6,6 @@ import { fetchHtml } from "./utils.client";
 // @ts-ignore
 const alertify = window.alertify;
 
-/*
-export const showInstallMiner = (context: GlobalContextType, minerName: string) => {
-    if (! context.rigHost) return;
-    console.log(`showInstallMiner ${minerName}`)
-
-    // TODO
-    const minerAlias = `${minerName}-test-todo`; // TODO: demander un alias a l'utilisateur pour cette install du miner
-
-    const options: {[key: string]: any} = {
-        //version: '',
-    };
-
-    installMiner(context, minerName, minerAlias, options);
-};
-*/
 
 export const showUninstallMiner = (context: GlobalContextType, minerName: string) => {
     if (! context.rigHost) return;

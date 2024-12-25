@@ -235,6 +235,60 @@ const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: React.Dis
     const selectedMinerName = props.selectedMinerName;
     const setTabName = props.setTabName;
 
+    const [coinsList, setCoinsList] = useState<[string, string][]>([])
+    const [coin, setCoin] = useState<string | null>(null)
+
+    const [walletsList, setWalletsList] = useState<[string, string][]>([])
+    const [wallet, setWallet] = useState<string | null>(null)
+
+    const [poolsList, setPoolsList] = useState<[string, string][]>([])
+    const [pool, setPool] = useState<string | null>(null)
+    const [poolUrl, setPoolUrl] = useState<string | null>(null)
+    const [poolAccount, setPoolAccount] = useState<string | null>(null)
+
+    const [minersList, setMinersList] = useState<[string, string][]>([])
+    const [minerName, setMinerName] = useState<string | null>(null)
+    const [minersAliasesList, setMinersAliasesList] = useState<[string, string][]>([])
+    const [minerAlias, setMinerAlias] = useState<string | null>(null)
+    const [algosList, setAlgosList] = useState<[string, string][]>([])
+    const [algo, setAlgo] = useState<string | null>(null)
+    const [minerOptionalParams, setMinerOptionalParams] = useState<string | null>(null)
+    const [worker, setWorker] = useState<string | null>(null)
+
+    const changeCoin = (_coin: string | null) => {
+        setCoin(_coin)
+
+        const _wallets = (rigStatus && _coin) ? rigStatus.config.coinsWallets[_coin] : {};
+        const _walletsList: [string, string][] = Object.entries(_wallets);
+        setWalletsList(_walletsList);
+
+        const _pools = (rigStatus && _coin) ? rigStatus.config.coinsPools[_coin] : {};
+        const _poolsList: [string, any][] = Object.entries(_pools);
+        setPoolsList(_poolsList);
+
+        const miners = (rigStatus && _coin) ? rigStatus.config.coinsMiners[_coin] : {};
+        const _minersList: [string, any][] = Object.entries(miners);
+        setMinersList(_minersList);
+
+    }
+
+    const changeWallet = (_wallet: string | null) => {
+        setWallet(_wallet)
+    }
+
+    const changePool = (_pool: string | null) => {
+        setPool(_pool)
+        setPoolUrl(_pool)
+    }
+
+    const changeMiner = (_miner: string | null) => {
+        setMinerName(_miner)
+    }
+
+    useEffect(() => {
+        // TODO: reload wallet list
+    }, [coin])
+
     return (
         <>
             <button onClick={() => setTabName('infos')}>back</button>
@@ -245,12 +299,10 @@ const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: React.Dis
                 <div className='m-1'>
                     <label className='w-100'>
                         <span>Coin</span>
-                        <select name="" className='form-control'>
+                        <select name="" className='form-control' onChange={(event) => changeCoin(event.target.value || null)}>
                             <option value=""></option>
-                            {rigStatus && Object.keys(rigStatus.config.coins).map(coin => (
-                                <>
-                                    <option value={coin}>{coin}</option>
-                                </>
+                            {rigStatus && Object.keys(rigStatus.config.coins).map(_coin => (
+                                <option key={_coin} value={_coin}>{_coin}</option>
                             ))}
                         </select>
                     </label>
@@ -260,6 +312,9 @@ const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: React.Dis
                         <span>Wallet</span>
                         <select name="" className='form-control'>
                             <option value=""></option>
+                            {walletsList.map(walletEntry => (
+                                <option key={walletEntry[0]} value={walletEntry[0]}>{walletEntry[0]}</option>
+                            ))}
                         </select>
                     </label>
                 </div>
@@ -269,6 +324,9 @@ const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: React.Dis
                         <div className='input-group'>
                             <select name="" className='form-control'>
                                 <option value=""></option>
+                                {poolsList.map(poolEntry => (
+                                    <option key={poolEntry[0]} value={poolEntry[0]}>{poolEntry[0]}</option>
+                                ))}
                             </select>
                             <button className="btn btn-outline-secondary" type="button" onClick={() => document.getElementById('run-miner-pool-details')?.classList.toggle('d-none')}>...</button>
                         </div>
@@ -294,6 +352,9 @@ const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: React.Dis
                         <div className='input-group'>
                             <select name="" className='form-control'>
                                 <option value=""></option>
+                                {minersList.map(minerEntry => (
+                                    <option key={minerEntry[0]} value={minerEntry[0]}>{minerEntry[0]}</option>
+                                ))}
                             </select>
                             <button className="btn btn-outline-secondary" type="button" onClick={() => document.getElementById('run-miner-miner-details')?.classList.toggle('d-none')}>...</button>
                         </div>

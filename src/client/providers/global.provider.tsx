@@ -29,6 +29,7 @@ export interface GlobalContextType {
 
     installMiner: (context: GlobalContextType, minerName: string, minerAlias?: string, options?: {[key: string]: any} ) => void,
     uninstallMiner: (context: GlobalContextType, minerName: string, minerAlias?: string) => void,
+
     startMiner: (context: GlobalContextType, minerName: string, minerAlias: string, options: {[key: string]: any}) => void,
     stopMiner: (context: GlobalContextType, minerName: string, minerAlias: string) => void,
 }

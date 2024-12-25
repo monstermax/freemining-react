@@ -52,6 +52,9 @@ const LayoutHost: React.FC = function (props) {
                             <li className="nav-item">
                                 <Link to="/mining/software" className='navbar-brand'>Software</Link>
                             </li>
+                            <li className="nav-item">
+                                <Link to="/mining/mining" className='navbar-brand'>Mining</Link>
+                            </li>
                         </ul>
                     </div>
                 </div>
