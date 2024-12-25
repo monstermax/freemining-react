@@ -2,8 +2,8 @@
 import React, { createContext, useState, ReactNode, ProviderProps, useContext } from 'react';
 
 import { RigStatus } from '../types_client/freemining';
-import { showInstallMiner, showUninstallMiner, installMiner, uninstallMiner } from '../lib/software_install';
-import { showStartMiner, showStopMiner, startMiner, stopMiner } from '../lib/software_start';
+import { showUninstallMiner, installMiner, uninstallMiner } from '../lib/software_install';
+import { showStopMiner, startMiner, stopMiner } from '../lib/software_start';
 
 
 const initialDefaultRigHost = '127.0.0.1:1234';
@@ -22,14 +22,14 @@ export interface GlobalContextType {
     rigStatusLoading: boolean;
     setRigStatusLoading: React.Dispatch<React.SetStateAction<boolean>>;
 
-    showInstallMiner: (context: GlobalContextType, minerName: string) => void,
-    showUninstallMiner: (context: GlobalContextType, minerName: string) => void,
-    showStartMiner: (context: GlobalContextType, minerName: string) => void,
-    showStopMiner: (context: GlobalContextType, minerName: string) => void,
+    //showInstallMiner: (context: GlobalContextType, minerName: string) => void,
+    //showUninstallMiner: (context: GlobalContextType, minerName: string) => void,
+    //showStartMiner: (context: GlobalContextType, minerName: string) => void,
+    //showStopMiner: (context: GlobalContextType, minerName: string) => void,
 
-    installMiner: (context: GlobalContextType, minerName: string, minerAlias?: string) => void,
+    installMiner: (context: GlobalContextType, minerName: string, minerAlias?: string, options?: {[key: string]: any} ) => void,
     uninstallMiner: (context: GlobalContextType, minerName: string, minerAlias?: string) => void,
-    startMiner: (context: GlobalContextType, minerName: string, minerAlias: string) => void,
+    startMiner: (context: GlobalContextType, minerName: string, minerAlias: string, options: {[key: string]: any}) => void,
     stopMiner: (context: GlobalContextType, minerName: string, minerAlias: string) => void,
 }
 
@@ -55,7 +55,7 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
         rigHost, setRigHost,
         rigStatus, setRigStatus,
         rigStatusLoading, setRigStatusLoading,
-        showInstallMiner, showUninstallMiner, showStartMiner, showStopMiner,
+        //showInstallMiner, showUninstallMiner, showStartMiner, showStopMiner,
         installMiner, uninstallMiner, startMiner, stopMiner,
     };
 

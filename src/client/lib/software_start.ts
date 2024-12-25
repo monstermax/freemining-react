@@ -7,6 +7,7 @@ import { fetchHtml } from "./utils.client";
 const alertify = window.alertify;
 
 
+/*
 export const showStartMiner = (context: GlobalContextType, minerName: string) => {
     if (! context.rigHost) return;
     console.log(`showStartMiner ${minerName}`)
@@ -15,6 +16,7 @@ export const showStartMiner = (context: GlobalContextType, minerName: string) =>
     const minerAlias = `${minerName}-test-todo`; // TODO: proposer tous les alias installés pour ce miner
     startMiner(context, minerName, minerAlias, {});
 };
+*/
 
 
 export const showStopMiner = (context: GlobalContextType, minerName: string) => {
@@ -27,7 +29,7 @@ export const showStopMiner = (context: GlobalContextType, minerName: string) => 
 
 
 
-export const startMiner = (context: GlobalContextType, minerName: string, minerAlias: string, options: any) => {
+export const startMiner = (context: GlobalContextType, minerName: string, minerAlias: string, options: {[key: string]: any}) => {
     if (! context.rigHost) return;
     console.log(`startMiner ${minerAlias}`)
 

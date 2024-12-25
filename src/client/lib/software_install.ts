@@ -6,7 +6,7 @@ import { fetchHtml } from "./utils.client";
 // @ts-ignore
 const alertify = window.alertify;
 
-
+/*
 export const showInstallMiner = (context: GlobalContextType, minerName: string) => {
     if (! context.rigHost) return;
     console.log(`showInstallMiner ${minerName}`)
@@ -20,7 +20,7 @@ export const showInstallMiner = (context: GlobalContextType, minerName: string) 
 
     installMiner(context, minerName, minerAlias, options);
 };
-
+*/
 
 export const showUninstallMiner = (context: GlobalContextType, minerName: string) => {
     if (! context.rigHost) return;
@@ -33,7 +33,7 @@ export const showUninstallMiner = (context: GlobalContextType, minerName: string
 
 
 
-export const installMiner = (context: GlobalContextType, minerName: string, minerAlias?: string, options?: any) => {
+export const installMiner = (context: GlobalContextType, minerName: string, minerAlias?: string, options?: {[key: string]: any}) => {
     if (! context.rigHost) return;
     console.log(`installMiner ${minerName} / ${minerAlias}`);
 
