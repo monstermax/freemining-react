@@ -208,6 +208,11 @@ const SoftwareTabInfos: React.FC<{ rigStatus: RigStatus, openMinerPopup: (minerN
 
 
 const SoftwareTabInstall: React.FC<{selectedMinerName: string, setTabName: React.Dispatch<React.SetStateAction<string>>}> = function (props) {
+    const context = useContext(GlobalContext);
+    if (!context) throw new Error("Context GlobalProvider not found");
+
+    const { rigStatus } = context;
+
     const selectedMinerName = props.selectedMinerName;
     const setTabName = props.setTabName;
 
@@ -222,6 +227,11 @@ const SoftwareTabInstall: React.FC<{selectedMinerName: string, setTabName: React
 
 
 const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: React.Dispatch<React.SetStateAction<string>>}> = function (props) {
+    const context = useContext(GlobalContext);
+    if (!context) throw new Error("Context GlobalProvider not found");
+
+    const { rigStatus } = context;
+
     const selectedMinerName = props.selectedMinerName;
     const setTabName = props.setTabName;
 
@@ -237,6 +247,11 @@ const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: React.Dis
                         <span>Coin</span>
                         <select name="" className='form-control'>
                             <option value=""></option>
+                            {rigStatus && Object.keys(rigStatus.config.coins).map(coin => (
+                                <>
+                                    <option value={coin}>{coin}</option>
+                                </>
+                            ))}
                         </select>
                     </label>
                 </div>
@@ -326,11 +341,12 @@ const SoftwareMinerModal: React.FC<{ selectedMinerName: string, showInstallMiner
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Context GlobalProvider not found");
 
+    const { rigStatus, uninstallMiner, stopMiner } = context;
+
     const selectedMinerName = props.selectedMinerName;
     const showInstallMiner = props.showInstallMiner;
     const showStartMiner = props.showStartMiner;
 
-    const { rigStatus, uninstallMiner, stopMiner } = context;
 
     const labelYes = <div className='badge bg-success m-1'>YES</div>
     const labelNo = <div className='badge bg-danger m-1'>NO</div>
