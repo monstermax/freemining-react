@@ -1,5 +1,5 @@
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { GlobalContext } from '../../providers/global.provider';
 import { RigStatusConfigCoin, RigStatusConfigCoinMiner, RigStatusConfigCoinMiners, RigStatusConfigCoinPool, RigStatusConfigCoinPools, RigStatusConfigCoinWallet, RigStatusConfigCoinWallets, RigStatusStatusInstalledMinerAlias, RigStatusStatusInstalledMinerAliases } from '../../types_client/freemining';
@@ -25,7 +25,7 @@ export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: Re
     const [coin, setCoin] = useState<string | null>(null)
 
     const [walletsList, setWalletsList] = useState<[string, RigStatusConfigCoinWallet][]>([])
-    const [wallet, setWallet] = useState<string | null>(null)
+    const [wallet, setWalletAddress] = useState<string | null>(null)
 
     const [poolsList, setPoolsList] = useState<[string, RigStatusConfigCoinPool][]>([])
     const [pool, setPool] = useState<string | null>(null)
@@ -38,68 +38,46 @@ export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: Re
     const [minerAlias, setMinerAlias] = useState<string | null>(null)
     const [algo, setAlgo] = useState<string | null>(null)
     const [extraArgs, setExtraArgs] = useState<string | null>(null)
-    const [worker, setWorker] = useState<string | null>('test'); // TODO
+    const [worker, setWorker] = useState<string | null>(rigStatus?.rig.name ?? null);
     const [startEnabled, setStartEnabled] = useState<boolean>(false);
 
-    const changeCoin = (_coin: string | null) => {
-        setCoin(_coin)
+    const $poolRef = useRef<HTMLSelectElement>(null);
 
-        const _wallets: RigStatusConfigCoinWallets = (rigStatus && _coin) ? rigStatus.config.coinsWallets[_coin] : {};
+
+    const onCoinChanged = () => {
+        // Update WALLET
+        const _wallets: RigStatusConfigCoinWallets = (rigStatus && coin) ? rigStatus.config.coinsWallets[coin] : {};
         const _walletsList: [string, string][] = Object.entries(_wallets);
-        const _wallet = (_walletsList.length === 1) ? _walletsList[0][0] : null;
         setWalletsList(_walletsList);
-        setWallet(null);
 
-        const _pools: RigStatusConfigCoinPools = (rigStatus && _coin) ? rigStatus.config.coinsPools[_coin] : {};
+        // Update POOL
+        const _pools: RigStatusConfigCoinPools = (rigStatus && coin) ? rigStatus.config.coinsPools[coin] : {};
         const _poolsList: [string, RigStatusConfigCoinPool][] = Object.entries(_pools);
-        const _pool = null; // TODO
         setPoolsList(_poolsList);
-        setPool(null);
-        setPoolUrl(null);
-        setPoolUser(null);
 
-        const miners = (rigStatus && _coin) ? rigStatus.config.coinsMiners[_coin] : {};
+        // Update MINER
+        const miners = (rigStatus && coin) ? rigStatus.config.coinsMiners[coin] : {};
         const _minersList: [string, RigStatusConfigCoinMiner][] = Object.entries(miners);
-        const _miner = selectedMinerName || ((_minersList.length === 1) ? _minersList[0][0] : null) || null;
         setMinersList(_minersList);
-        setMinerName(null);
-        setMinersAliasesList([]);
-        setMinerAlias(null);
-        setAlgo(null);
-        setExtraArgs(null);
-        //setWorker(null);
-
-        if (_coin && _wallet) {
-            changeWallet(_wallet);
-        }
-
-        if (_coin && _pool) {
-            //const $select = null; // TODO
-            //$select.value = _pool;
-        }
-
-        if (_coin && _miner) {
-            changeMinerName(_miner);
-        }
     }
 
-    const changeWallet = (_walletName: string | null) => {
-        setWallet(_walletName);
+    const onWalletChanged = () => {
+
     }
 
-    const changePoolRef = ($select: HTMLSelectElement) => {
-        const _poolUrl = $select.value;
+    const onPoolChanged = () => {
+        const $select = $poolRef.current;   // <SELECT ...>
+        //const _poolUrl = $select?.value;
+        const _poolUrl = pool;
 
-        if (! _poolUrl) {
-            setPool(null);
+        if (! _poolUrl || ! $select) {
             setPoolUrl(null);
             setPoolUser(null);
             return;
         }
 
-        const $option = $select.options[$select.selectedIndex];
-        const $optgroup = $option.parentElement;[]
-
+        const $option = $select.options[$select.selectedIndex]; // <OPTION value="...">
+        const $optgroup = $option.parentElement;[]              // <OPTGROUP label="...">
         const _poolName = $optgroup?.getAttribute('label') ?? '';
 
         if (! _poolName) {
@@ -115,23 +93,20 @@ export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: Re
         _poolUser = _poolUser.replaceAll('{wallet}', wallet ?? '');
         _poolUser = _poolUser.replaceAll('{worker}', worker ?? '');
 
-        setPool(_poolUrl);
         setPoolUrl(_poolUrl);
         setPoolUser(_poolUser);
     }
 
-    const changePoolUrl = (_poolUrl: string | null) => {
-        setPoolUrl(_poolUrl);
+    const onPoolUrlChanged = () => {
+
     }
 
-    const changepoolUser = (_poolUser: string | null) => {
-        setPoolUser(_poolUser);
+    const onPoolUserChanged = () => {
+
     }
 
-    const changeMinerName = (_minerName: string | null) => {
-        setMinerName(_minerName);
-
-        if (! coin || !rigStatus || ! _minerName) {
+    const onMinerNameChanged = () => {
+        if (! coin || ! rigStatus || ! minerName) {
             setMinersAliasesList([]);
             setMinerAlias(null);
             setAlgo(null);
@@ -139,33 +114,36 @@ export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: Re
             return;
         }
 
-        const _minerAliases = rigStatus.status.installedMinersAliases[_minerName].versions;
+        // UPDATE ALIAS
+        const _minerAliases = rigStatus.status.installedMinersAliases[minerName].versions;
         const _minersAliasesList = Object.entries(_minerAliases);
         _minersAliasesList.sort((a, b) => b[1].version.localeCompare(a[1].version));
         setMinersAliasesList(_minersAliasesList);
-        setMinerAlias(rigStatus.status.installedMinersAliases[_minerName].defaultAlias);
+        setMinerAlias(rigStatus.status.installedMinersAliases[minerName].defaultAlias);
 
-        const _algo = rigStatus.config.coinsMiners[coin][_minerName].algo ?? '';
+        // UPDATE ALGO
+        const _algo = rigStatus.config.coinsMiners[coin][minerName]?.algo ?? '';
         setAlgo(_algo);
 
-        const _extraArgs = rigStatus.config.coinsMiners[coin][_minerName].extraArgs ?? '';
+        // UPDATE EXTRA_ARGS
+        const _extraArgs = rigStatus.config.coinsMiners[coin][minerName]?.extraArgs ?? '';
         setExtraArgs(_extraArgs);
     }
 
-    const changeMinerAlias = (_minerAlias: string | null) => {
-        setMinerAlias(_minerAlias);
+    const onMinerAliasChanged = () => {
+
     }
 
-    const changeextraArgs = (_extraArgs: string | null) => {
-        setExtraArgs(_extraArgs);
+    const onExtraArgsChanged = () => {
+
     }
 
-    const changeAlgo = (_algo: string | null) => {
-        setAlgo(_algo);
+    const onAlgoChanged = () => {
+
     }
 
-    const changeWorker = (_worker: string | null) => {
-        setWorker(_worker);
+    const onWorkerChanged = () => {
+
     }
 
     const submitStartMiner = () => {
@@ -182,7 +160,48 @@ export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: Re
         };
 
         startMiner(context, minerName, minerAlias, options);
+
+        setTabName('infos');
     }
+
+
+    useEffect(() => {
+        // COIN CHANGED
+        onCoinChanged();
+    }, [coin]);
+
+    useEffect(() => {
+        // WALLETS LIST CHANGED
+        const _wallet = (walletsList.length === 1) ? walletsList[0][1] : null; // si 1 seul element on le selectionne
+        setWalletAddress(_wallet ?? null);
+    }, [coin, walletsList]);
+
+    useEffect(() => {
+        // WALLET CHANGED
+        onWalletChanged();
+    }, [coin, walletsList]);
+
+    useEffect(() => {
+        // MINERS LIST CHANGED
+        const _minerName = selectedMinerName || ((minersList.length === 1) ? minersList[0][0] : null); // si 1 seul element on le selectionne
+        setMinerName(_minerName ?? null);
+    }, [coin, minersList]);
+
+    useEffect(() => {
+        // MINER NAME CHANGED
+        onMinerNameChanged();
+    }, [coin, minerName]);
+
+    useEffect(() => {
+        // POOLS LIST CHANGED
+        const _pool = null; // TODO : selectedPool || (allPoolsUrls.length === 1) ....
+        setPool(_pool ?? null);
+    }, [coin, poolsList]);
+
+    useEffect(() => {
+        // POOL CHANGED
+        onPoolChanged();
+    }, [coin, pool]);
 
 
     useEffect(() => {
@@ -194,7 +213,7 @@ export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: Re
             poolUrl,
             minerName,
             minerAlias,
-            algo,
+            //algo,
             //extraArgs,
             //worker,
         };
@@ -205,10 +224,7 @@ export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: Re
         //}
 
         const _startEnabled = ! Object.values(variables).some((variable => ! variable));
-
-        //if (_startEnabled !== startEnabled) {
-            setStartEnabled(_startEnabled);
-        //}
+        setStartEnabled(_startEnabled);
 
     }, [coin, wallet, pool, poolUser, poolUrl, minerName, minerAlias, algo, extraArgs, worker])
 
@@ -225,7 +241,7 @@ export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: Re
                     <label className='w-100'>
                         <span>Coin</span>
 
-                        <select name="" className='form-control' onChange={(event) => changeCoin(event.target.value || null)}>
+                        <select name="" value={coin ?? ''} className='form-control' onChange={(event) => setCoin(event.target.value || null)}>
                             <option value=""></option>
 
                             {coinsList.map(coinEntry => {
@@ -244,7 +260,7 @@ export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: Re
                     <label className='w-100'>
                         <span>Wallet</span>
 
-                        <select name="" className='form-control' onChange={(event) => changeWallet(event.target.value || null)}>
+                        <select name="" value={wallet ?? ''} className='form-control' onChange={(event) => setWalletAddress(event.target.value || null)}>
                             <option value=""></option>
 
                             {walletsList.map(walletEntry => {
@@ -264,7 +280,7 @@ export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: Re
                         <span>Pool</span>
 
                         <div className='input-group'>
-                            <select name="" className='form-control' value={pool ?? ''} onChange={(event) => changePoolRef(event.target)}>
+                            <select ref={$poolRef} name="" value={pool ?? ''} className='form-control' onChange={(event) => setPool(event.target.value || null)}>
                                 <option value=""></option>
 
                                 {poolsList.map(poolEntry => {
@@ -302,7 +318,7 @@ export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: Re
                         <label className='w-100'>
                             <span>Pool url</span>
 
-                            <input type="text" name="" value={poolUrl ?? ''} className='form-control' onChange={(event) => changePoolUrl(event.target.value || null) } />
+                            <input type="text" name="" value={poolUrl ?? ''} className='form-control' onChange={(event) => setPoolUrl(event.target.value || null) } />
                         </label>
                     </div>
 
@@ -311,7 +327,7 @@ export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: Re
                         <label className='w-100'>
                             <span>Pool account</span>
 
-                            <input type="text" name="" value={poolUser ?? ''} className='form-control' onChange={(event) => changepoolUser(event.target.value || null) } />
+                            <input type="text" name="" value={poolUser ?? ''} className='form-control' onChange={(event) => setPoolUser(event.target.value || null) } />
                         </label>
                     </div>
                 </div>
@@ -322,7 +338,7 @@ export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: Re
                         <span>Miner</span>
 
                         <div className='input-group'>
-                            <select name="" className='form-control' value={minerName ?? ''} onChange={(event) => changeMinerName(event.target.value || null)}>
+                            <select name="" value={minerName ?? ''} className='form-control' onChange={(event) => setMinerName(event.target.value || null)}>
                                 <option value=""></option>
 
                                 {minersList.map(minerEntry => (
@@ -343,7 +359,7 @@ export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: Re
                         <label className='w-100'>
                             <span>Version</span>
 
-                            <select name="" value={minerAlias ?? ''} className='form-control' onChange={(event) => changeMinerAlias(event.target.value || null)}>
+                            <select name="" value={minerAlias ?? ''} className='form-control' onChange={(event) => setMinerAlias(event.target.value || null)}>
                                 <option value=""></option>
 
                                 {minersAliasesList.map(minerAliasEntry => {
@@ -363,7 +379,7 @@ export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: Re
                         <label className='w-100'>
                             <span>Algo</span>
 
-                            <input type="text" name="" value={algo ?? ''} className='form-control' onChange={(event) => changeAlgo(event.target.value || null) } />
+                            <input type="text" name="" value={algo ?? ''} className='form-control' onChange={(event) => setAlgo(event.target.value || null) } />
                         </label>
                     </div>
 
@@ -372,7 +388,7 @@ export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: Re
                         <label className='w-100'>
                             <span>Miner optional parameters</span>
 
-                            <input type="text" name="" value={extraArgs ?? ''} className='form-control' onChange={(event) => changeextraArgs(event.target.value || null) } />
+                            <input type="text" name="" value={extraArgs ?? ''} className='form-control' onChange={(event) => setExtraArgs(event.target.value || null) } />
                         </label>
                     </div>
 
@@ -381,7 +397,7 @@ export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: Re
                         <label className='w-100'>
                             <span>Worker</span>
 
-                            <input type="text" name="" value={worker ?? ''} className='form-control' onChange={(event) => changeWorker(event.target.value || null) } />
+                            <input type="text" name="" value={worker ?? ''} className='form-control' onChange={(event) => setWorker(event.target.value || null) } />
                         </label>
                     </div>
                 </div>

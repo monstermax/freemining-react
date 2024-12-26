@@ -30,7 +30,7 @@ const LayoutHost: React.FC = function (props) {
         <>
             <div className='d-flex'>
                 <div className={`badge ${rigStatus ? "bg-success" : "bg-danger"} m-1`}>
-                    <span className='m-1'>{rigHost}</span>
+                    <span className='m-1'>{rigHost} {rigStatus? ` - ${rigStatus.rig.name}` : ''}</span>
                     <button type="button" className="btn-close m-1" aria-label="Close" onClick={() => setRigHost(null)}></button>
                 </div>
 
