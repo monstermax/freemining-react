@@ -8,11 +8,12 @@ export type RigStatus = {
     usage: RigStatusUsage,
 };
 
-type RigStatusConfig = {
-    coins:        {[coin: string]: { algo: string, coinName: string, explorer?: string }},
-    coinsMiners:  {[coin: string]: {[minerName: string]: { algo?: string, extraArgs?: string }}},
-    coinsPools:   {[coin: string]: {[poolName: string]: { urls: {[urlName: string]: string}, user: string }}},
-    coinsWallets: {[coin: string]: {[walletName: string]: string}},
+export type RigStatusConfig = {
+    coins:        {[coin: string]: RigStatusConfigCoin},
+    coinsWallets: RigStatusConfigCoinsWallets,
+    coinsPools:   {[coin: string]: RigStatusConfigCoinPools},
+    coinsMiners:  {[coin: string]: RigStatusConfigCoinMiners},
+
     farmAgent: { host: string, pass: string, port: number },
     miners: {[minerName: string]: { apiPort?: number, extraArgs?: string }},
     name: string,
@@ -20,7 +21,22 @@ type RigStatusConfig = {
     dataDate: number,
 };
 
-type RigStatusRig = {
+
+export type RigStatusConfigCoin = { algo: string, coinName: string, explorer?: string };
+
+export type RigStatusConfigCoinsWallets = {[coin: string]: RigStatusConfigCoinWallets};
+export type RigStatusConfigCoinWallets  = {[walletName: string]: RigStatusConfigCoinWallet};
+export type RigStatusConfigCoinWallet   = string;
+
+export type RigStatusConfigCoinPools = {[poolName: string]: RigStatusConfigCoinPool};
+export type RigStatusConfigCoinPool  = { urls: {[urlName: string]: string}, user: string };
+
+export type RigStatusConfigCoinMiners = {[minerName: string]: RigStatusConfigCoinMiner};
+export type RigStatusConfigCoinMiner  = { algo?: string, extraArgs?: string };
+
+
+
+export type RigStatusRig = {
     freeminingVersion: string,
     hostname: string,
     ip: string,
@@ -28,7 +44,7 @@ type RigStatusRig = {
     os: string,
 };
 
-type RigStatusStatus = {
+export type RigStatusStatus = {
     farmAgentStatus: boolean,
     installableMiners: string[],
     installedMiners: string[],
@@ -41,7 +57,7 @@ type RigStatusStatus = {
     runningMinersAliases: {[minerName: string]: {[minerAlias: string]: RigStatusStatusRunningMinerAlias}},
 };
 
-type RigStatusStatusInstalledMinerAliases = {
+export type RigStatusStatusInstalledMinerAliases = {
     defaultAlias: string,
     lastVersion: string,
     name: string,
@@ -49,7 +65,7 @@ type RigStatusStatusInstalledMinerAliases = {
     versions: {[minerAlias: string]: RigStatusStatusInstalledMinerAlias},
 };
 
-type RigStatusStatusInstalledMinerAlias = {
+export type RigStatusStatusInstalledMinerAlias = {
     alias: string,
     installDate: string,
     installUrl: string,
@@ -57,7 +73,7 @@ type RigStatusStatusInstalledMinerAlias = {
     version: string,
 };
 
-type RigStatusStatusInstalledMinerStats = {
+export type RigStatusStatusInstalledMinerStats = {
     dataDate: number,
     devices: {
         cpus: any[],
@@ -85,7 +101,7 @@ type RigStatusStatusInstalledMinerStats = {
     },
 };
 
-type RigStatusStatusRunningMinerAlias = {
+export type RigStatusStatusRunningMinerAlias = {
     alias: string,
     args: string[],
     dateStart: number,
@@ -101,7 +117,7 @@ type RigStatusStatusRunningMinerAlias = {
     pid: number,
 };
 
-type RigStatusSystemInfos = {
+export type RigStatusSystemInfos = {
     board: { manufacturer: string, model: string },
     cpu: {
         brand: string,
@@ -173,7 +189,7 @@ type RigStatusSystemInfos = {
     },
 };
 
-type RigStatusUsage = {
+export type RigStatusUsage = {
     cpuLoad: number,
     loadAvg: number,
     memory: {
