@@ -3,6 +3,15 @@ import { GlobalContextType } from "../providers/global.provider";
 import { fetchHtml } from "./utils.client";
 
 
+export type startMinerOptions = {
+    coin: string,
+    algo: string,
+    poolUrl: string,
+    poolUser: string,
+    extraArgs: string,
+};
+
+
 // @ts-ignore
 const alertify = window.alertify;
 
@@ -16,7 +25,7 @@ export const showStopMiner = (context: GlobalContextType, minerName: string) => 
 };
 
 
-export const startMiner = (context: GlobalContextType, minerName: string, minerAlias: string, options: {[key: string]: any}) => {
+export const startMiner = (context: GlobalContextType, minerName: string, minerAlias: string, options: startMinerOptions) => {
     if (! context.rigHost) return;
     console.log(`startMiner ${minerAlias}`)
 

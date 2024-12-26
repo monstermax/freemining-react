@@ -4,6 +4,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import { GlobalContext } from '../../providers/global.provider';
 
 
+// TODO: a deplacer dans une route autonome : /mining/software/install
+
 
 export const SoftwareTabInstall: React.FC<{selectedMinerName: string, setTabName: React.Dispatch<React.SetStateAction<string>>}> = function (props) {
     const context = useContext(GlobalContext);
