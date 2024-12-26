@@ -3,20 +3,22 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { GlobalContext } from '../../providers/global.provider';
 import { RigStatusConfigCoin, RigStatusConfigCoinMiner, RigStatusConfigCoinMiners, RigStatusConfigCoinPool, RigStatusConfigCoinPools, RigStatusConfigCoinWallet, RigStatusConfigCoinWallets, RigStatusStatusInstalledMinerAlias, RigStatusStatusInstalledMinerAliases } from '../../types_client/freemining';
-import { startMiner, startMinerOptions } from '../../lib/software_start';
+import { startMiner, StartMinerOptions } from '../../lib/software_start';
 
 
 // TODO: a deplacer dans une route autonome : /mining/software/run
 
 
-export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: React.Dispatch<React.SetStateAction<string>>}> = function (props) {
+export const SoftwareTabRun: React.FC<{selectedCoin?: string | null, selectedMinerName?: string | null, closeSoftwarePopup: () => void, setTabName: React.Dispatch<React.SetStateAction<string>>}> = function (props) {
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Context GlobalProvider not found");
 
     const { rigStatus } = context;
 
-    const selectedMinerName = props.selectedMinerName;
+    const selectedCoin = props.selectedCoin ?? null;
+    const selectedMinerName = props.selectedMinerName ?? null;
     const setTabName = props.setTabName;
+    const closeSoftwarePopup = props.closeSoftwarePopup;
 
     const _selectedMinerCoinsList = (rigStatus && selectedMinerName) ? Object.entries(rigStatus.config.coinsMiners).filter(entry => selectedMinerName in entry[1]).map(entry => entry[0]) : null
     const _coinsList = rigStatus ? Object.entries(rigStatus.config.coins).filter(entry => (_selectedMinerCoinsList === null) || _selectedMinerCoinsList.includes(entry[0])) : [];
@@ -126,7 +128,10 @@ export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: Re
         setAlgo(_algo);
 
         // UPDATE EXTRA_ARGS
-        const _extraArgs = rigStatus.config.coinsMiners[coin][minerName]?.extraArgs ?? '';
+        const minerExtraArgs = rigStatus.config.miners[minerName]?.extraArgs ?? '';
+        const coinerMinerExtraArgs = rigStatus.config.coinsMiners[coin][minerName]?.extraArgs ?? '';
+
+        const _extraArgs = [minerExtraArgs, coinerMinerExtraArgs].join(' ').trim();
         setExtraArgs(_extraArgs);
     }
 
@@ -151,7 +156,7 @@ export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: Re
         if (! coin || ! algo) return;
         if (! poolUrl || ! poolUser) return;
 
-        const options: startMinerOptions = {
+        const options: StartMinerOptions = {
             coin,
             algo,
             poolUrl,
@@ -207,13 +212,13 @@ export const SoftwareTabRun: React.FC<{selectedMinerName: string, setTabName: Re
     useEffect(() => {
         const variables: {[variableName: string]: string | null} = {
             coin,
-            wallet,
+            //wallet,
             //pool,
             poolUser,
             poolUrl,
             minerName,
             minerAlias,
-            //algo,
+            algo,
             //extraArgs,
             //worker,
         };

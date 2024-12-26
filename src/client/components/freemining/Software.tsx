@@ -19,16 +19,17 @@ const Software: React.FC = function (props: any) {
     const { rigHost, rigStatus, installMiner, uninstallMiner, startMiner, stopMiner } = context;
 
     const [modalOpened, setModalOpened] = useState<boolean>(false);
+    const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
     const [selectedMinerName, setSelectedMinerName] = useState<string | null>(null);
-    //const [selectedMinerAlias, setSelectedMinerAlias] = useState<string | null>(null);
+    //const [selectedPool, setSelectedPool] = useState<string | null>(null);
     const [tabName, setTabName] = useState<string>('infos');
 
-    const openMinerPopup = (minerName: string) => {
+    const openSoftwarePopup = (minerName: string) => {
         setSelectedMinerName(minerName);
         setModalOpened(true);
     }
 
-    const closeMinerPopup = () => {
+    const closeSoftwarePopup = () => {
         const $modal = document.getElementById('modal-miner');
 
         if ($modal) {
@@ -59,41 +60,20 @@ const Software: React.FC = function (props: any) {
 
     const showInstallMiner = (context: GlobalContextType, minerName: string) => {
         if (! context.rigHost) return;
-        console.log(`showInstallMiner ${minerName}`);
+        //console.log(`showInstallMiner ${minerName}`);
 
-        //setSelectedMinerName(selectedMinerName);
+        setSelectedMinerName(minerName);
         setTabName('install');
-        closeMinerPopup();
-
-        function onSubmit() {
-            // TODO
-            const minerAlias = `${minerName}-test-todo`; // TODO: a recuperer dans le formulaire
-
-            const options: {[key: string]: any} = { // TODO: a recuperer dans le formulaire
-                //version: '',
-            };
-
-            installMiner(context, minerName, minerAlias, options);
-        }
+        closeSoftwarePopup();
     };
 
     const showStartMiner = (context: GlobalContextType, minerName: string) => {
         if (! context.rigHost) return;
-        console.log(`showStartMiner ${minerName}`)
+        //console.log(`showStartMiner ${minerName}`)
 
-        //setSelectedMinerName(selectedMinerName);
+        setSelectedMinerName(minerName);
         setTabName('run');
-        closeMinerPopup();
-
-        function onSubmit() {
-            // TODO
-            const minerAlias = `${minerName}-test-todo`; // TODO: a recuperer dans le formulaire
-
-            const options: {[key: string]: any} = { // TODO: a recuperer dans le formulaire
-            };
-
-            startMiner(context, minerName, minerAlias, options);
-        }
+        closeSoftwarePopup();
     };
 
 
@@ -110,40 +90,26 @@ const Software: React.FC = function (props: any) {
 
                 {rigStatus && 
                     <>
-                        {/*
                         <div>
                             <button onClick={() => setTabName('infos')}>infos</button>
                             <button onClick={() => setTabName('run')}>run</button>
                             <button onClick={() => setTabName('install')}>install</button>
                         </div>
-                        */}
 
                         <div>
                             {tabName === 'infos' && (
-                                <SoftwareTabInfos rigStatus={rigStatus} openMinerPopup={openMinerPopup} />
+                                <SoftwareTabInfos rigStatus={rigStatus} openSoftwarePopup={openSoftwarePopup} closeSoftwarePopup={closeSoftwarePopup} />
                             )}
 
                             {tabName === 'run' && (
                                 <>
-                                    {!selectedMinerName && <>Error: missing selectedMinerName</>}
-
-                                    {selectedMinerName && (
-                                        <>
-                                            <SoftwareTabRun selectedMinerName={selectedMinerName} setTabName={setTabName} />
-                                        </>
-                                    )}
+                                    <SoftwareTabRun selectedCoin={selectedCoin} selectedMinerName={selectedMinerName} closeSoftwarePopup={closeSoftwarePopup} setTabName={setTabName} />
                                 </>
                             )}
 
                             {tabName === 'install' && (
                                 <>
-                                    {!selectedMinerName && <>Error: missing selectedMinerName</>}
-
-                                    {selectedMinerName && (
-                                        <>
-                                            <SoftwareTabInstall selectedMinerName={selectedMinerName} setTabName={setTabName} />
-                                        </>
-                                    )}
+                                    <SoftwareTabInstall selectedMinerName={selectedMinerName} closeSoftwarePopup={closeSoftwarePopup} setTabName={setTabName} />
                                 </>
                             )}
                         </div>
@@ -151,13 +117,12 @@ const Software: React.FC = function (props: any) {
 
                         {modalOpened && selectedMinerName && (
                             <>
-                                <SoftwareModal selectedMinerName={selectedMinerName} showInstallMiner={showInstallMiner} showStartMiner={showStartMiner} />
+                                <SoftwareModal selectedMinerName={selectedMinerName} closeSoftwarePopup={closeSoftwarePopup} showInstallMiner={showInstallMiner} showStartMiner={showStartMiner} />
                             </>
                         )}
                     </>
                 }
             </div>
-
 
         </>
     );
