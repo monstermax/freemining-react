@@ -2,6 +2,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 
 import { GlobalContext, GlobalContextType } from '../../providers/global.provider';
+
 import { SoftwareTabRun } from './SoftwareRun';
 import { SoftwareTabInstall } from './SoftwareInstall';
 import { SoftwareTabInfos } from './SoftwareInfos';
@@ -92,7 +93,7 @@ const Software: React.FC = function (props: any) {
                         </div>
                         */}
 
-                        <div>
+                        <div className='m-2 mt-3'>
                             {tabName === 'infos' && (
                                 <SoftwareTabInfos rigStatus={rigStatus} selectedMinerName={selectedMinerName} setSelectedMinerName={setSelectedMinerName} openSoftwarePopup={openSoftwarePopup} closeSoftwarePopup={closeSoftwarePopup} setTabName={setTabName} />
                             )}

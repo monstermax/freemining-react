@@ -97,62 +97,64 @@ export const SoftwareTabInstall: React.FC<{selectedMinerName?: string | null, cl
 
     return (
         <>
-            <h2>
-                <a className='pointer' onClick={() => setTabName('infos')}>Software</a> &gt; install miner
-            </h2>
-            <hr />
+            <div className='d-flex m-2 mt-3'>
+                <h2>Install miner</h2>
+                <button type="button" className="btn-close m-2" aria-label="Close" onClick={() => setTabName('infos')}></button>
+            </div>
 
-            <form onSubmit={(event) => event.preventDefault()}>
+            <div className='alert alert-info'>
+                <form onSubmit={(event) => event.preventDefault()}>
 
-                {/* MINER */}
-                <div className='m-1'>
-                    <label className='w-100'>
-                        <span>Miner</span>
+                    {/* MINER */}
+                    <div className='m-1'>
+                        <label className='w-100'>
+                            <span>Miner</span>
 
-                        <div className='input-group'>
-                            <select name="" value={minerName ?? ''} className='form-control' onChange={(event) => setMinerName(event.target.value || null)}>
-                                <option value=""></option>
+                            <div className='input-group'>
+                                <select name="" value={minerName ?? ''} className='form-control' onChange={(event) => setMinerName(event.target.value || null)}>
+                                    <option value=""></option>
 
-                                {minersList.map(minerEntry => (
-                                    <option key={minerEntry[0]} value={minerEntry[0]}>{minerEntry[0]}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </label>
-                </div>
+                                    {minersList.map(minerEntry => (
+                                        <option key={minerEntry[0]} value={minerEntry[0]}>{minerEntry[0]}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </label>
+                    </div>
 
-                {/* MINER VERSION */}
-                <div className='m-1'>
-                    <label className='w-100'>
-                        <span>Version</span>
+                    {/* MINER VERSION */}
+                    <div className='m-1'>
+                        <label className='w-100'>
+                            <span>Version</span>
 
-                        <div className='input-group'>
-                            <select name="" value={minerVersion ?? ''} className='form-control' onChange={(event) => setMinerVersion(event.target.value || null)}>
-                                <option value=""></option>
+                            <div className='input-group'>
+                                <select name="" value={minerVersion ?? ''} className='form-control' onChange={(event) => setMinerVersion(event.target.value || null)}>
+                                    <option value=""></option>
 
-                                {minerInstallableVersionsList.map(version => (
-                                    <option key={version} value={version}>{minerName} - {version}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </label>
-                </div>
+                                    {minerInstallableVersionsList.map(version => (
+                                        <option key={version} value={version}>{minerName} - {version}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </label>
+                    </div>
 
-                {/* MINER - ALIAS */}
-                <div className='m-1'>
-                    <label className='w-100'>
-                        <span>Alias</span>
+                    {/* MINER - ALIAS */}
+                    <div className='m-1'>
+                        <label className='w-100'>
+                            <span>Alias</span>
 
-                        <input type="text" name="" value={minerAlias ?? ''} className='form-control' onChange={(event) => setMinerAlias(event.target.value || null) } />
-                    </label>
-                </div>
+                            <input type="text" name="" value={minerAlias ?? ''} className='form-control' onChange={(event) => setMinerAlias(event.target.value || null) } />
+                        </label>
+                    </div>
 
-                {/* SUBMIT */}
-                <div className='m-1'>
-                    <button className={`btn btn-primary ${installEnabled ? "" : "disabled"}`} onClick={() => submitStartMiner()}>Install</button>
-                </div>
+                    {/* SUBMIT */}
+                    <div className='m-1 mt-3 text-center'>
+                        <button className={`btn btn-primary ${installEnabled ? "" : "disabled"}`} onClick={() => submitStartMiner()}>⚡ Install now</button>
+                    </div>
 
-            </form>
+                </form>
+            </div>
         </>
     );
 };

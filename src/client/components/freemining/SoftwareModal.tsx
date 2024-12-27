@@ -49,7 +49,6 @@ export const SoftwareModal: React.FC<{ selectedMinerName: string, closeSoftwareP
                                 {selectedMinerName && rigStatus && (
                                     <>
                                         <ul>
-                                            {/*
                                             <li>
                                                 installable: {rigStatus.status.installableMiners.includes(selectedMinerName) ? labelYes : labelNo}
 
@@ -59,7 +58,6 @@ export const SoftwareModal: React.FC<{ selectedMinerName: string, closeSoftwareP
                                                     </>
                                                 )}
                                             </li>
-                                            */}
 
                                             <li>
                                                 installed: {rigStatus.status.installedMiners.includes(selectedMinerName) ? labelYes : labelNo}
@@ -79,7 +77,6 @@ export const SoftwareModal: React.FC<{ selectedMinerName: string, closeSoftwareP
                                             <li>managed: {rigStatus.status.managedMiners.includes(selectedMinerName) ? labelYes : labelNo}</li>
                                             */}
 
-                                            {/*
                                             <li>
                                                 runnable: {rigStatus.status.runnableMiners.includes(selectedMinerName) ? labelYes : labelNo}
 
@@ -89,7 +86,6 @@ export const SoftwareModal: React.FC<{ selectedMinerName: string, closeSoftwareP
                                                     </>
                                                 )}
                                             </li>
-                                            */}
 
                                             <li>
                                                 running: {rigStatus.status.runningMiners.includes(selectedMinerName) ? labelYes : labelNo}

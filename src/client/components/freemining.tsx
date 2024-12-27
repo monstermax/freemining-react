@@ -11,6 +11,9 @@ import NoPage from "./freemining/NoPage";
 import { GlobalContext, GlobalProvider } from "../providers/global.provider";
 import { useFetchJson } from "../lib/utils.client";
 import { RigStatus } from "../types_client/freemining";
+import Mining from "./freemining/Mining";
+import Settings from "./freemining/Settings";
+import Status from "./freemining/Status";
 
 
 export const Freemining: React.FC = function () {
@@ -45,18 +48,62 @@ export const LayoutNoHost: React.FC = function () {
     const { defaultRigHost, rigHost, setRigHost } = context;
     const inputRef = useRef<HTMLInputElement>(null);
 
+    const { favoritesHosts } = context;
+
+    useEffect(() => {
+        inputRef.current?.focus();
+    })
+
+    const setRigHostSafe = (_rigHost: string) => {
+        if (! _rigHost.includes(':')) {
+            _rigHost += ':1234';
+        }
+
+        setRigHost(_rigHost);
+    }
+
     return (
         <>
-            <form onSubmit={(event) => event.preventDefault()}>
-                <label className="m-1">
-                    <span className="m-1">Enter rig host:</span>
-                    <input ref={inputRef} type="text" className="form-control m-1" defaultValue={rigHost || ''} placeholder={defaultRigHost || 'localhost'} />
-                </label>
 
-                <button type="submit" className="btn btn-primary m-1" onClick={(event) => setRigHost(inputRef.current?.value || '')}>change</button>
+            <nav className='navbar navbar-expand-lg bg-secondary text-light mb-1 p-1 rounded'>
+                <h1 className='h2 cursor-default'>Riggle</h1>
 
-                <button type="button" className="btn btn-outline-primary m-1" onClick={(event) => setRigHost(defaultRigHost)}>{defaultRigHost}</button>
-            </form>
+                <div className="ms-auto">
+                    <div className={`badge bg-danger m-1 cursor-default`}>
+                        <span className='m-1'>not connected</span>
+                        <button type="button" className="btn m-1"></button>
+                    </div>
+                </div>
+            </nav>
+
+            <div className="m-1">
+                <form onSubmit={(event) => event.preventDefault()}>
+                    <div className="m-1 alert alert-info text-center">
+                        <label className="text-start">
+                            <span className="m-1">Connect to the rig:</span>
+
+                            <div className="d-flex">
+                                <input ref={inputRef} type="text" className="form-control m-1" defaultValue={rigHost || ''} placeholder={defaultRigHost || 'localhost'} />
+
+                                <button type="submit" className="btn btn-primary m-1" onClick={(event) => setRigHostSafe(inputRef.current?.value || '')}>connect</button>
+                            </div>
+                        </label>
+                    </div>
+                    <br />
+
+                    {favoritesHosts.length > 0 && (
+                        <div className="m-1 alert alert-info text-center">
+                            <h2 className="h4">Favorites</h2>
+
+                            {favoritesHosts.map(host => {
+                                return (
+                                    <button key={host} type="button" className="btn btn-outline-secondary m-1" onClick={(event) => setRigHost(host)}>{host}</button>
+                                );
+                            })}
+                        </div>
+                    )}
+                </form>
+            </div>
         </>
     );
 }
@@ -122,6 +169,9 @@ export const LayoutHostRouter: React.FC = function () {
                     <Route index element={<Home />} />
                     <Route path="hardware" element={<Hardware />} />
                     <Route path="software" element={<Software />} />
+                    <Route path="mining" element={<Mining />} />
+                    <Route path="settings" element={<Settings />} />
+                    <Route path="status" element={<Status />} />
                     <Route path="*" element={<NoPage />} />
                 </Route>
             </Routes>

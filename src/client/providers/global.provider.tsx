@@ -32,6 +32,9 @@ export interface GlobalContextType {
 
     startMiner: (context: GlobalContextType, minerName: string, minerAlias: string, options: {[key: string]: any}) => void,
     stopMiner: (context: GlobalContextType, minerName: string, minerAlias: string) => void,
+
+    favoritesHosts: string[],
+    setFavoritesHosts: React.Dispatch<React.SetStateAction<string[]>>,
 }
 
 
@@ -51,6 +54,10 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
     const [rigStatus, setRigStatus] = useState<RigStatus | null>(null);
     const [rigStatusLoading, setRigStatusLoading] = useState<boolean>(false);
 
+    const _favoritesHostsJson = window.localStorage.getItem('favoritesHosts') || null;
+    const _favoritesHosts = _favoritesHostsJson ? JSON.parse(_favoritesHostsJson) : (defaultRigHost ? [defaultRigHost] : []);
+    const [favoritesHosts, setFavoritesHosts] = useState<string[]>(_favoritesHosts);
+
     const variables: any = {
         defaultRigHost, setDefaultRigHost,
         rigHost, setRigHost,
@@ -58,6 +65,7 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
         rigStatusLoading, setRigStatusLoading,
         //showInstallMiner, showUninstallMiner, showStartMiner, showStopMiner,
         installMiner, uninstallMiner, startMiner, stopMiner,
+        favoritesHosts, setFavoritesHosts,
     };
 
     return (

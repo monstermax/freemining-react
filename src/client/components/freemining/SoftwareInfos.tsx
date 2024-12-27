@@ -29,14 +29,10 @@ export const SoftwareTabInfos: React.FC<{ rigStatus: RigStatus, selectedMinerNam
 
     return (
         <>
-            <h2>
-                Software
-            </h2>
-            <hr />
-
             <div className='alert alert-info'>
-                <div>
-                    <h2 className='h4'>Running Miners</h2>
+                <h2 className='h4'>Running Miners</h2>
+
+                <div className='m-2'>
                     {rigStatus.status.runningMiners.map(minerName => {
                         return (
                             <span key={minerName} className='badge bg-secondary m-1 pointer' onClick={() => openSoftwarePopup(minerName)}>{minerName}</span>
@@ -46,8 +42,9 @@ export const SoftwareTabInfos: React.FC<{ rigStatus: RigStatus, selectedMinerNam
             </div>
 
             <div className='alert alert-info'>
-                <div>
-                    <h2 className='h4'>Installed Miners</h2>
+                <h2 className='h4'>Installed Miners</h2>
+
+                <div className='m-2'>
                     {rigStatus.status.installedMiners.map(minerName => {
                         return (
                             <span key={minerName} className='badge bg-secondary m-1 pointer' onClick={() => openSoftwarePopup(minerName)}>{minerName}</span>
@@ -59,8 +56,9 @@ export const SoftwareTabInfos: React.FC<{ rigStatus: RigStatus, selectedMinerNam
             </div>
 
             <div className='alert alert-info'>
-                <div>
-                    <h2 className='h4'>Installable Miners</h2>
+                <h2 className='h4'>Installable Miners</h2>
+
+                <div className='m-2'>
                     {installablesMiners.map(minerName => {
                         return (
                             <span key={minerName} className='badge bg-secondary m-1 pointer' onClick={() => changeTab('install', minerName)}>{minerName}</span>

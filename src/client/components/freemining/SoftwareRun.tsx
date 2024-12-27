@@ -34,10 +34,10 @@ export const SoftwareTabRun: React.FC<{selectedCoin?: string | null, selectedMin
 
     const _coinsList = !rigStatus ? [] : Object.entries(rigStatus.config.coins)
             .filter(coinEntry => (_selectedMinerCoinsList === null) || _selectedMinerCoinsList.includes(coinEntry[0]))
-            .filter(coinEntry => Object.keys(rigStatus.config.coinsWallets[coinEntry[0]]).length > 0)
-            .filter(coinEntry => Object.keys(rigStatus.config.coinsPools[coinEntry[0]]).length > 0)
-            .filter(coinEntry => Object.keys(rigStatus.config.coinsMiners[coinEntry[0]]).length > 0)
-            .filter(coinEntry => Object.keys(rigStatus.config.coinsMiners[coinEntry[0]]).filter(minerName => _runnableMiners.includes(minerName)).length > 0)
+            .filter(coinEntry => Object.keys(rigStatus.config.coinsWallets[coinEntry[0]] ?? {}).length > 0)
+            .filter(coinEntry => Object.keys(rigStatus.config.coinsPools[coinEntry[0]] ?? {}).length > 0)
+            .filter(coinEntry => Object.keys(rigStatus.config.coinsMiners[coinEntry[0]] ?? {}).length > 0)
+            .filter(coinEntry => Object.keys(rigStatus.config.coinsMiners[coinEntry[0]] ?? {}).filter(minerName => _runnableMiners.includes(minerName)).length > 0)
             ;
 
     const [coinsList, setCoinsList] = useState<[string, RigStatusConfigCoin][]>(_coinsList)
@@ -253,185 +253,187 @@ export const SoftwareTabRun: React.FC<{selectedCoin?: string | null, selectedMin
 
     return (
         <>
-            <h2>
-                <a className='pointer' onClick={() => setTabName('infos')}>Software</a> &gt; run miner
-            </h2>
-            <hr />
+            <div className='d-flex m-2 mt-3'>
+                <h2>Run miner</h2>
+                <button type="button" className="btn-close m-2" aria-label="Close" onClick={() => setTabName('infos')}></button>
+            </div>
 
-            <form onSubmit={(event) => event.preventDefault()}>
+            <div className='alert alert-info'>
+                <form onSubmit={(event) => event.preventDefault()}>
 
-                {/* COIN */}
-                <div className='m-1'>
-                    <label className='w-100'>
-                        <span>Coin</span>
+                    {/* COIN */}
+                    <div className='m-1'>
+                        <label className='w-100'>
+                            <span>Coin</span>
 
-                        <select name="" value={coin ?? ''} className='form-control' onChange={(event) => setCoin(event.target.value || null)}>
-                            <option value=""></option>
-
-                            {coinsList.map(coinEntry => {
-                                const [_coin, _coinDetails] = coinEntry;
-
-                                return (
-                                    <option key={_coin} value={_coin}>{_coin} - {_coinDetails.coinName}</option>
-                                );
-                            })}
-                        </select>
-                    </label>
-                </div>
-
-                {/* WALLET */}
-                <div className='m-1'>
-                    <label className='w-100'>
-                        <span>Wallet</span>
-
-                        <select name="" value={wallet ?? ''} className='form-control' onChange={(event) => setWalletAddress(event.target.value || null)}>
-                            <option value=""></option>
-
-                            {walletsList.map(walletEntry => {
-                                const [_walletName, _walletAddress] = walletEntry;
-
-                                return (
-                                    <option key={_walletAddress} value={_walletAddress}>{_walletName} : {_walletAddress}</option>
-                                );
-                            })}
-                        </select>
-                    </label>
-                </div>
-
-                {/* POOL */}
-                <div className='m-1'>
-                    <label className='w-100'>
-                        <span>Pool</span>
-
-                        <div className='input-group'>
-                            <select ref={$poolRef} name="" value={pool ?? ''} className='form-control' onChange={(event) => setPool(event.target.value || null)}>
+                            <select name="" value={coin ?? ''} className='form-control' onChange={(event) => setCoin(event.target.value || null)}>
                                 <option value=""></option>
 
-                                {poolsList.map(poolEntry => {
-                                    const [_poolName, _poolDetails] = poolEntry;
-
-                                    if (Object.keys(_poolDetails.urls).length === 0) {
-                                        return null;
-                                    }
+                                {coinsList.map(coinEntry => {
+                                    const [_coin, _coinDetails] = coinEntry;
 
                                     return (
-                                        <optgroup key={_poolName} label={_poolName}>
-
-                                            {Object.entries(_poolDetails.urls).map(urlEntry => {
-                                                const [_urlName, _url] = urlEntry;
-
-                                                return (
-                                                    <option key={_url} value={_url}>{_urlName} | {_url}</option>
-                                                );
-                                            })}
-                                        </optgroup>
-                                    )
-                                })}
-                            </select>
-
-                            <button className="btn btn-outline-secondary" type="button" onClick={() => document.getElementById('run-miner-pool-details')?.classList.toggle('d-none')}>...</button>
-                        </div>
-                    </label>
-                </div>
-
-                {/* POOL - DETAILS */}
-                <div id="run-miner-pool-details" className='d-none'>
-
-                    {/* POOL - URL */}
-                    <div className='m-1'>
-                        <label className='w-100'>
-                            <span>Pool url</span>
-
-                            <input type="text" name="" value={poolUrl ?? ''} className='form-control' onChange={(event) => setPoolUrl(event.target.value || null) } />
-                        </label>
-                    </div>
-
-                    {/* POOL - ACCOUNT */}
-                    <div className='m-1'>
-                        <label className='w-100'>
-                            <span>Pool account</span>
-
-                            <input type="text" name="" value={poolUser ?? ''} className='form-control' onChange={(event) => setPoolUser(event.target.value || null) } />
-                        </label>
-                    </div>
-                </div>
-
-                {/* MINER */}
-                <div className='m-1'>
-                    <label className='w-100'>
-                        <span>Miner</span>
-
-                        <div className='input-group'>
-                            <select name="" value={minerName ?? ''} className='form-control' onChange={(event) => setMinerName(event.target.value || null)}>
-                                <option value=""></option>
-
-                                {minersList.map(minerEntry => (
-                                    <option key={minerEntry[0]} value={minerEntry[0]}>{minerEntry[0]}</option>
-                                ))}
-                            </select>
-
-                            <button className="btn btn-outline-secondary" type="button" onClick={() => document.getElementById('run-miner-miner-details')?.classList.toggle('d-none')}>...</button>
-                        </div>
-                    </label>
-                </div>
-
-                {/* MINER - DETAILS */}
-                <div id="run-miner-miner-details" className='d-none'>
-
-                    {/* MINER - ALIAS */}
-                    <div className='m-1'>
-                        <label className='w-100'>
-                            <span>Version</span>
-
-                            <select name="" value={minerAlias ?? ''} className='form-control' onChange={(event) => setMinerAlias(event.target.value || null)}>
-                                <option value=""></option>
-
-                                {minersAliasesList.map(minerAliasEntry => {
-                                    const [aliasname, minerAliasDetails] = minerAliasEntry;
-                                    //const selected = (rigStatus && minerName) ? (rigStatus.status.installedMinersAliases[minerName].defaultAlias === minerAliasDetails.alias) : false;
-
-                                    return (
-                                        <option key={minerAliasDetails.alias} value={minerAliasDetails.alias}>{minerAliasDetails.alias}</option>
+                                        <option key={_coin} value={_coin}>{_coin} - {_coinDetails.coinName}</option>
                                     );
                                 })}
                             </select>
                         </label>
                     </div>
 
-                    {/* MINER - ALGO */}
+                    {/* WALLET */}
                     <div className='m-1'>
                         <label className='w-100'>
-                            <span>Algo</span>
+                            <span>Wallet</span>
 
-                            <input type="text" name="" value={algo ?? ''} className='form-control' onChange={(event) => setAlgo(event.target.value || null) } />
+                            <select name="" value={wallet ?? ''} className='form-control' onChange={(event) => setWalletAddress(event.target.value || null)}>
+                                <option value=""></option>
+
+                                {walletsList.map(walletEntry => {
+                                    const [_walletName, _walletAddress] = walletEntry;
+
+                                    return (
+                                        <option key={_walletAddress} value={_walletAddress}>{_walletName} : {_walletAddress}</option>
+                                    );
+                                })}
+                            </select>
                         </label>
                     </div>
 
-                    {/* MINER - OPTIONAL ARGS */}
+                    {/* POOL */}
                     <div className='m-1'>
                         <label className='w-100'>
-                            <span>Miner optional parameters</span>
+                            <span>Pool</span>
 
-                            <input type="text" name="" value={extraArgs ?? ''} className='form-control' onChange={(event) => setExtraArgs(event.target.value || null) } />
+                            <div className='input-group'>
+                                <select ref={$poolRef} name="" value={pool ?? ''} className='form-control' onChange={(event) => setPool(event.target.value || null)}>
+                                    <option value=""></option>
+
+                                    {poolsList.map(poolEntry => {
+                                        const [_poolName, _poolDetails] = poolEntry;
+
+                                        if (Object.keys(_poolDetails.urls || {}).length === 0) {
+                                            return null;
+                                        }
+
+                                        return (
+                                            <optgroup key={_poolName} label={_poolName}>
+
+                                                {Object.entries(_poolDetails.urls || {}).map(urlEntry => {
+                                                    const [_urlName, _url] = urlEntry;
+
+                                                    return (
+                                                        <option key={_url} value={_url}>{_urlName} | {_url}</option>
+                                                    );
+                                                })}
+                                            </optgroup>
+                                        )
+                                    })}
+                                </select>
+
+                                <button className="btn btn-outline-secondary" type="button" onClick={() => document.getElementById('run-miner-pool-details')?.classList.toggle('d-none')}>...</button>
+                            </div>
                         </label>
                     </div>
 
-                    {/* MINER - WORKER */}
+                    {/* POOL - DETAILS */}
+                    <div id="run-miner-pool-details" className='d-none'>
+
+                        {/* POOL - URL */}
+                        <div className='m-1'>
+                            <label className='w-100'>
+                                <span>Pool url</span>
+
+                                <input type="text" name="" value={poolUrl ?? ''} className='form-control' onChange={(event) => setPoolUrl(event.target.value || null) } />
+                            </label>
+                        </div>
+
+                        {/* POOL - ACCOUNT */}
+                        <div className='m-1'>
+                            <label className='w-100'>
+                                <span>Pool account</span>
+
+                                <input type="text" name="" value={poolUser ?? ''} className='form-control' onChange={(event) => setPoolUser(event.target.value || null) } />
+                            </label>
+                        </div>
+                    </div>
+
+                    {/* MINER */}
                     <div className='m-1'>
                         <label className='w-100'>
-                            <span>Worker</span>
+                            <span>Miner</span>
 
-                            <input type="text" name="" value={worker ?? ''} className='form-control' onChange={(event) => setWorker(event.target.value || null) } />
+                            <div className='input-group'>
+                                <select name="" value={minerName ?? ''} className='form-control' onChange={(event) => setMinerName(event.target.value || null)}>
+                                    <option value=""></option>
+
+                                    {minersList.map(minerEntry => (
+                                        <option key={minerEntry[0]} value={minerEntry[0]}>{minerEntry[0]}</option>
+                                    ))}
+                                </select>
+
+                                <button className="btn btn-outline-secondary" type="button" onClick={() => document.getElementById('run-miner-miner-details')?.classList.toggle('d-none')}>...</button>
+                            </div>
                         </label>
                     </div>
-                </div>
 
-                {/* SUBMIT */}
-                <div className='m-1'>
-                    <button className={`btn btn-primary ${startEnabled ? "" : "disabled"}`} onClick={() => submitStartMiner()}>Start</button>
-                </div>
+                    {/* MINER - DETAILS */}
+                    <div id="run-miner-miner-details" className='d-none'>
 
-            </form>
+                        {/* MINER - ALIAS */}
+                        <div className='m-1'>
+                            <label className='w-100'>
+                                <span>Version</span>
+
+                                <select name="" value={minerAlias ?? ''} className='form-control' onChange={(event) => setMinerAlias(event.target.value || null)}>
+                                    <option value=""></option>
+
+                                    {minersAliasesList.map(minerAliasEntry => {
+                                        const [aliasname, minerAliasDetails] = minerAliasEntry;
+                                        //const selected = (rigStatus && minerName) ? (rigStatus.status.installedMinersAliases[minerName].defaultAlias === minerAliasDetails.alias) : false;
+
+                                        return (
+                                            <option key={minerAliasDetails.alias} value={minerAliasDetails.alias}>{minerAliasDetails.alias}</option>
+                                        );
+                                    })}
+                                </select>
+                            </label>
+                        </div>
+
+                        {/* MINER - ALGO */}
+                        <div className='m-1'>
+                            <label className='w-100'>
+                                <span>Algo</span>
+
+                                <input type="text" name="" value={algo ?? ''} className='form-control' onChange={(event) => setAlgo(event.target.value || null) } />
+                            </label>
+                        </div>
+
+                        {/* MINER - OPTIONAL ARGS */}
+                        <div className='m-1'>
+                            <label className='w-100'>
+                                <span>Miner optional parameters</span>
+
+                                <input type="text" name="" value={extraArgs ?? ''} className='form-control' onChange={(event) => setExtraArgs(event.target.value || null) } />
+                            </label>
+                        </div>
+
+                        {/* MINER - WORKER */}
+                        <div className='m-1'>
+                            <label className='w-100'>
+                                <span>Worker</span>
+
+                                <input type="text" name="" value={worker ?? ''} className='form-control' onChange={(event) => setWorker(event.target.value || null) } />
+                            </label>
+                        </div>
+                    </div>
+
+                    {/* SUBMIT */}
+                    <div className='m-1 mt-3 text-center'>
+                        <button className={`btn btn-primary ${startEnabled ? "" : "disabled"}`} onClick={() => submitStartMiner()}>⚡ Start now</button>
+                    </div>
+
+                </form>
+            </div>
         </>
     );
 };
