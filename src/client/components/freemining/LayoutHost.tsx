@@ -56,7 +56,7 @@ const LayoutHost: React.FC = function (props) {
                         <div>
                             <div className="btn-group">
                                 <button type="button" className="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                    {rigHost} / {rigStatus.rig.name}
+                                    {rigHost}
                                 </button>
 
                                 <ul className="dropdown-menu">

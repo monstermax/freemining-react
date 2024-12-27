@@ -15,7 +15,7 @@ const Mining: React.FC = function (props: any) {
     return (
         <>
             <pre>
-                {JSON.stringify(rigStatus, null, 4)}
+                {JSON.stringify(rigStatus?.status.minersStats, null, 4)}
             </pre>
         </>
     );
