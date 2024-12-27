@@ -4,11 +4,12 @@ import { fetchHtml } from "./utils.client";
 
 
 export type InstallMinerOptions = {
+    minerVersion: string,
     confirmed?: boolean,
-    // TODO
 }
 
 export type UninstallMinerOptions = {
+    minerVersion: string,
     confirmed?: boolean,
 }
 
@@ -37,10 +38,15 @@ export const installMiner = (context: GlobalContextType, minerName: string, mine
     const onFail = (minerName: string, minerAlias: string | undefined, err: any) => {};
 
     const confirmed = options?.confirmed || false;
+    const minerVersion = options?.minerVersion || '';
     let error: string | null = null;
 
     if (! minerName) {
-        error = `Missing {miner} parameter`;
+        error = `Missing {minerName} parameter`;
+    }
+
+    if (! minerVersion) {
+        error = `Missing {minerVersion} parameter`;
     }
 
     if (error) {
@@ -62,7 +68,9 @@ export const installMiner = (context: GlobalContextType, minerName: string, mine
         const data: {[key: string]: any} = {
             action: 'start',
             miner: minerName,
-            minerAlias,
+            alias: minerAlias,
+            version: minerVersion,
+            default: 1,
         };
 
         const url = `http://${context.rigHost}/rig/miners/${minerName}/install`;
@@ -110,21 +118,23 @@ export const uninstallMiner = (context: GlobalContextType, minerName: string, mi
     if (! context.rigHost) return;
     console.log(`uninstallMiner ${minerName} / ${minerAlias}`);
 
-    const onStart = (minerName: string, minerAlias?: string) => {};
-    const onSuccess = (minerName: string, minerAlias: string | undefined, result: any) => {};
-    const onFail = (minerName: string, minerAlias: string | undefined, err: any) => {};
-
+    //const minerVersion = options?.minerVersion || '';
     const confirmed = options?.confirmed || false;
     let error: string | null = null;
 
     if (! minerName) {
-        error = `Missing {miner} parameter`;
+        error = `Missing {minerName} parameter`;
     }
 
     if (error) {
         alertify.error(`Error: ${error}`);
         return;
     }
+
+    const onStart = (minerName: string, minerAlias?: string) => {};
+    const onSuccess = (minerName: string, minerAlias: string | undefined, result: any) => {};
+    const onFail = (minerName: string, minerAlias: string | undefined, err: any) => {};
+
 
     //const minerFullName = `${minerName}-${minerAlias}`;
     const minerFullTitle = (minerName === minerAlias || ! minerAlias) ? minerName : `${minerName} (${minerAlias}))`;
@@ -139,7 +149,7 @@ export const uninstallMiner = (context: GlobalContextType, minerName: string, mi
         const data: {[key: string]: any} = {
             action: 'start',
             miner: minerName,
-            minerAlias,
+            alias: minerAlias,
         };
 
         const url = `http://${context.rigHost}/rig/miners/${minerName}/uninstall`;

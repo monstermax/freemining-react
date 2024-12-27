@@ -1,6 +1,6 @@
 
 import React, { useContext, useEffect } from 'react';
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useLocation } from "react-router-dom";
 
 import { GlobalContext } from '../../providers/global.provider';
 import { fetchJson } from '../../lib/utils.client';
@@ -25,6 +25,8 @@ const LayoutHost: React.FC = function (props) {
             })
     }
 
+    const location = useLocation();
+
 
     return (
         <>
@@ -41,23 +43,10 @@ const LayoutHost: React.FC = function (props) {
             </div>
 
             <nav className='navbar navbar-expand-lg'>
-                <div className="container-fluid">
-                    <Link to="/mining" className='navbar-brand'>Home</Link>
-
-                    <div className="collapse navbar-collapse">
-                        <ul className='navbar-nav'>
-                            <li className="nav-item">
-                                <Link to="/mining/hardware" className='navbar-brand'>Hardware</Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link to="/mining/software" className='navbar-brand'>Software</Link>
-                            </li>
-                            <li className="nav-item">
-                                <Link to="/mining/mining" className='navbar-brand'>Mining</Link>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+                <Link to="/mining" className={`navbar-brand ${location.pathname === '/mining' ? "bold" : ""}`}>Home</Link>
+                <Link to="/mining/hardware" className={`navbar-brand ${location.pathname === '/mining/hardware' ? "bold" : ""}`}>Hardware</Link>
+                <Link to="/mining/software" className={`navbar-brand ${location.pathname === '/mining/software' ? "bold" : ""}`}>Software</Link>
+                <Link to="/mining/mining" className={`navbar-brand ${location.pathname === '/mining/mining' ? "bold" : ""}`}>Mining</Link>
             </nav>
 
             <Outlet />

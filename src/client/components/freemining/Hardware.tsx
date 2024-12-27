@@ -26,12 +26,6 @@ const Hardware: React.FC = function (props) {
 
     return (
         <>
-            <h1 className='h3'>
-                Hardware
-            </h1>
-
-            <hr />
-
             <div>
                 {!rigStatus && <div className='alert alert-info'>Loading hardware infos</div>}
 

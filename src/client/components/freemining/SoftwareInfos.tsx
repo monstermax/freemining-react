@@ -2,47 +2,73 @@
 import React, { useContext, useEffect, useState } from 'react';
 
 import { RigStatus } from '../../types_client/freemining';
+import { Link } from 'react-router-dom';
 
 
-export const SoftwareTabInfos: React.FC<{ rigStatus: RigStatus, openSoftwarePopup: (minerName: string) => void, closeSoftwarePopup: () => void }> = function (props) {
+export const SoftwareTabInfos: React.FC<{ rigStatus: RigStatus, selectedMinerName?: string | null, setSelectedMinerName: React.Dispatch<React.SetStateAction<string | null>>, openSoftwarePopup: (minerName: string) => void, closeSoftwarePopup: () => void, setTabName: React.Dispatch<React.SetStateAction<string>> }> = function (props) {
     const rigStatus = props.rigStatus;
 
+    const runnableMinersNames: string[] = !rigStatus ? [] : rigStatus?.status.installableMiners
+        .filter(minerName => rigStatus?.status.runnableMiners.includes(minerName))
+        .filter(minerName => rigStatus?.status.managedMiners.includes(minerName));
+
+    const selectedMinerName = props.selectedMinerName ?? null;
     const openSoftwarePopup = props.openSoftwarePopup;
     const closeSoftwarePopup = props.closeSoftwarePopup;
+    const setTabName = props.setTabName;
+    const setSelectedMinerName = props.setSelectedMinerName;
+
+    const installablesMiners = (! rigStatus) ? [] : rigStatus.status.installableMiners
+        .filter(minerName => ! rigStatus?.status.installedMiners.includes(minerName))
+        .filter(minerName => runnableMinersNames.includes(minerName));
+
+    const changeTab = (tabName: string, _selectedMinerName?: string | null) => {
+        setSelectedMinerName(_selectedMinerName ?? null);
+        setTabName(tabName);
+    }
 
     return (
         <>
+            <h2>
+                Software
+            </h2>
+            <hr />
+
             <div className='alert alert-info'>
-                <label>
+                <div>
                     <h2 className='h4'>Running Miners</h2>
                     {rigStatus.status.runningMiners.map(minerName => {
                         return (
                             <span key={minerName} className='badge bg-secondary m-1 pointer' onClick={() => openSoftwarePopup(minerName)}>{minerName}</span>
                         );
                     })}
-                </label>
+                </div>
             </div>
 
             <div className='alert alert-info'>
-                <label>
+                <div>
                     <h2 className='h4'>Installed Miners</h2>
                     {rigStatus.status.installedMiners.map(minerName => {
                         return (
                             <span key={minerName} className='badge bg-secondary m-1 pointer' onClick={() => openSoftwarePopup(minerName)}>{minerName}</span>
                         );
                     })}
-                </label>
+                </div>
+
+                <a className='btn btn-primary btn-sm' onClick={() => changeTab('run')}>Run miner...</a>
             </div>
 
             <div className='alert alert-info'>
-                <label>
+                <div>
                     <h2 className='h4'>Installable Miners</h2>
-                    {rigStatus.status.installableMiners.map(minerName => {
+                    {installablesMiners.map(minerName => {
                         return (
-                            <span key={minerName} className='badge bg-secondary m-1 pointer' onClick={() => openSoftwarePopup(minerName)}>{minerName}</span>
+                            <span key={minerName} className='badge bg-secondary m-1 pointer' onClick={() => changeTab('install', minerName)}>{minerName}</span>
                         );
                     })}
-                </label>
+                </div>
+
+                <a className='btn btn-primary btn-sm' onClick={() => changeTab('install')}>Install miner...</a>
             </div>
         </>
     );

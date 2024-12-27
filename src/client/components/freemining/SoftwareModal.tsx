@@ -12,7 +12,7 @@ export const SoftwareModal: React.FC<{ selectedMinerName: string, closeSoftwareP
 
     const { rigStatus, uninstallMiner, stopMiner } = context;
 
-    const selectedMinerName = props.selectedMinerName;
+    const selectedMinerName = props.selectedMinerName ?? null;
     const showInstallMiner = props.showInstallMiner;
     const showStartMiner = props.showStartMiner;
     const closeSoftwarePopup = props.closeSoftwarePopup;
@@ -49,15 +49,17 @@ export const SoftwareModal: React.FC<{ selectedMinerName: string, closeSoftwareP
                                 {selectedMinerName && rigStatus && (
                                     <>
                                         <ul>
+                                            {/*
                                             <li>
                                                 installable: {rigStatus.status.installableMiners.includes(selectedMinerName) ? labelYes : labelNo}
 
                                                 {rigStatus.status.installableMiners.includes(selectedMinerName) && (
                                                     <>
-                                                        <button className={`btn btn-primary btn-sm m-1 ${rigStatus.status.installedMiners.includes(selectedMinerName) ? "disabled" : ""}`} onClick={() => showInstallMiner(context, selectedMinerName)}>install...</button>
+                                                        <button className={`btn btn-primary btn-sm m-1`} onClick={() => showInstallMiner(context, selectedMinerName)}>install...</button>
                                                     </>
                                                 )}
                                             </li>
+                                            */}
 
                                             <li>
                                                 installed: {rigStatus.status.installedMiners.includes(selectedMinerName) ? labelYes : labelNo}
@@ -66,15 +68,18 @@ export const SoftwareModal: React.FC<{ selectedMinerName: string, closeSoftwareP
                                                     <>
                                                         {Object.keys(rigStatus.status.installedMinersAliases[selectedMinerName].versions).map(minerAlias => {
                                                             return (
-                                                                <button key={minerAlias} className={`btn btn-primary btn-sm m-1 ${rigStatus.status.runningMiners.includes(selectedMinerName) ? "disabled" : ""}`} onClick={() => submitUninstallMiner(context, selectedMinerName, minerAlias || '')}>uninstall {minerAlias}</button>
+                                                                <button key={minerAlias} className={`btn btn-primary btn-sm m-1 ${rigStatus.status.runningMiners.includes(selectedMinerName) ? "disabled" : ""}`} onClick={() => submitUninstallMiner(context, selectedMinerName, minerAlias)}>uninstall {minerAlias}</button>
                                                             );
                                                         })}
                                                     </>
                                                 )}
                                             </li>
 
+                                            {/*
                                             <li>managed: {rigStatus.status.managedMiners.includes(selectedMinerName) ? labelYes : labelNo}</li>
+                                            */}
 
+                                            {/*
                                             <li>
                                                 runnable: {rigStatus.status.runnableMiners.includes(selectedMinerName) ? labelYes : labelNo}
 
@@ -84,6 +89,7 @@ export const SoftwareModal: React.FC<{ selectedMinerName: string, closeSoftwareP
                                                     </>
                                                 )}
                                             </li>
+                                            */}
 
                                             <li>
                                                 running: {rigStatus.status.runningMiners.includes(selectedMinerName) ? labelYes : labelNo}

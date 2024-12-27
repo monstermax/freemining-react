@@ -46,7 +46,7 @@ export const startMiner = (context: GlobalContextType, minerName: string, minerA
         //error = `Missing {coin} parameter`;
     }
     if (! minerName) {
-        error = `Missing {miner} parameter`;
+        error = `Missing {minerName} parameter`;
     }
     if (! algo) {
         error = `Missing {algo} parameter`;

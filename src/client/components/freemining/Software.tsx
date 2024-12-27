@@ -79,26 +79,22 @@ const Software: React.FC = function (props: any) {
 
     return (
         <>
-            <h1 className='h3'>
-                Software
-            </h1>
-
-            <hr />
-
             <div>
                 {!rigStatus && <div className='alert alert-info'>Loading software infos</div>}
 
                 {rigStatus && 
                     <>
+                        {/*
                         <div>
                             <button onClick={() => setTabName('infos')}>infos</button>
-                            <button onClick={() => setTabName('run')}>run</button>
                             <button onClick={() => setTabName('install')}>install</button>
+                            <button onClick={() => setTabName('run')}>run</button>
                         </div>
+                        */}
 
                         <div>
                             {tabName === 'infos' && (
-                                <SoftwareTabInfos rigStatus={rigStatus} openSoftwarePopup={openSoftwarePopup} closeSoftwarePopup={closeSoftwarePopup} />
+                                <SoftwareTabInfos rigStatus={rigStatus} selectedMinerName={selectedMinerName} setSelectedMinerName={setSelectedMinerName} openSoftwarePopup={openSoftwarePopup} closeSoftwarePopup={closeSoftwarePopup} setTabName={setTabName} />
                             )}
 
                             {tabName === 'run' && (

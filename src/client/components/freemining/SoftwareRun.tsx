@@ -2,8 +2,10 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import { GlobalContext } from '../../providers/global.provider';
-import { RigStatusConfigCoin, RigStatusConfigCoinMiner, RigStatusConfigCoinMiners, RigStatusConfigCoinPool, RigStatusConfigCoinPools, RigStatusConfigCoinWallet, RigStatusConfigCoinWallets, RigStatusStatusInstalledMinerAlias, RigStatusStatusInstalledMinerAliases } from '../../types_client/freemining';
 import { startMiner, StartMinerOptions } from '../../lib/software_start';
+
+import type { RigStatusConfigCoin, RigStatusConfigCoinMiner, RigStatusConfigCoinMiners, RigStatusConfigCoinPool, RigStatusConfigCoinPools, RigStatusConfigCoinWallet, RigStatusConfigCoinWallets, RigStatusStatusInstalledMinerAlias, RigStatusStatusInstalledMinerAliases } from '../../types_client/freemining';
+import { Link } from 'react-router-dom';
 
 
 // TODO: a deplacer dans une route autonome : /mining/software/run
@@ -20,11 +22,25 @@ export const SoftwareTabRun: React.FC<{selectedCoin?: string | null, selectedMin
     const setTabName = props.setTabName;
     const closeSoftwarePopup = props.closeSoftwarePopup;
 
-    const _selectedMinerCoinsList = (rigStatus && selectedMinerName) ? Object.entries(rigStatus.config.coinsMiners).filter(entry => selectedMinerName in entry[1]).map(entry => entry[0]) : null
-    const _coinsList = rigStatus ? Object.entries(rigStatus.config.coins).filter(entry => (_selectedMinerCoinsList === null) || _selectedMinerCoinsList.includes(entry[0])) : [];
+    const [coin, setCoin] = useState<string | null>(null)
+
+    const _minersNames = (rigStatus && coin) ? rigStatus.config.coinsMiners[coin] : {};
+
+    const _runnableMiners: string[] = !rigStatus ? [] : rigStatus?.status.installedMiners
+        .filter(minerName => rigStatus?.status.runnableMiners.includes(minerName))
+        .filter(minerName => rigStatus?.status.managedMiners.includes(minerName));
+
+    const _selectedMinerCoinsList = ! (rigStatus && selectedMinerName) ? null : Object.entries(rigStatus.config.coinsMiners).filter(entry => selectedMinerName in entry[1]).map(entry => entry[0])
+
+    const _coinsList = !rigStatus ? [] : Object.entries(rigStatus.config.coins)
+            .filter(coinEntry => (_selectedMinerCoinsList === null) || _selectedMinerCoinsList.includes(coinEntry[0]))
+            .filter(coinEntry => Object.keys(rigStatus.config.coinsWallets[coinEntry[0]]).length > 0)
+            .filter(coinEntry => Object.keys(rigStatus.config.coinsPools[coinEntry[0]]).length > 0)
+            .filter(coinEntry => Object.keys(rigStatus.config.coinsMiners[coinEntry[0]]).length > 0)
+            .filter(coinEntry => Object.keys(rigStatus.config.coinsMiners[coinEntry[0]]).filter(minerName => _runnableMiners.includes(minerName)).length > 0)
+            ;
 
     const [coinsList, setCoinsList] = useState<[string, RigStatusConfigCoin][]>(_coinsList)
-    const [coin, setCoin] = useState<string | null>(null)
 
     const [walletsList, setWalletsList] = useState<[string, RigStatusConfigCoinWallet][]>([])
     const [wallet, setWalletAddress] = useState<string | null>(null)
@@ -57,9 +73,11 @@ export const SoftwareTabRun: React.FC<{selectedCoin?: string | null, selectedMin
         const _poolsList: [string, RigStatusConfigCoinPool][] = Object.entries(_pools);
         setPoolsList(_poolsList);
 
+
         // Update MINER
-        const miners = (rigStatus && coin) ? rigStatus.config.coinsMiners[coin] : {};
-        const _minersList: [string, RigStatusConfigCoinMiner][] = Object.entries(miners);
+        const _minersList: [string, RigStatusConfigCoinMiner][] = Object.entries(_minersNames)
+            .filter(minerEntry => _runnableMiners.includes(minerEntry[0]));
+
         setMinersList(_minersList);
     }
 
@@ -235,9 +253,10 @@ export const SoftwareTabRun: React.FC<{selectedCoin?: string | null, selectedMin
 
     return (
         <>
-            <button onClick={() => setTabName('infos')}>back</button>
-            <br />
-            run miner
+            <h2>
+                <a className='pointer' onClick={() => setTabName('infos')}>Software</a> &gt; run miner
+            </h2>
+            <hr />
 
             <form onSubmit={(event) => event.preventDefault()}>
 
@@ -407,6 +426,7 @@ export const SoftwareTabRun: React.FC<{selectedCoin?: string | null, selectedMin
                     </div>
                 </div>
 
+                {/* SUBMIT */}
                 <div className='m-1'>
                     <button className={`btn btn-primary ${startEnabled ? "" : "disabled"}`} onClick={() => submitStartMiner()}>Start</button>
                 </div>
