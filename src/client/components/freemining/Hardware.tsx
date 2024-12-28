@@ -36,7 +36,9 @@ const Hardware: React.FC = function (props) {
 
                             <div className='alert alert-secondary'>
                                 <div className='d-flex justify-content-between cursor-default'>
-                                    <h3 className='h5 bold m-0 truncate'>{rigStatus.systemInfos.cpu.manufacturer} {rigStatus.systemInfos.cpu.brand}</h3>
+                                    <h3 className='h5 bold m-0 truncate' title={rigStatus.systemInfos.cpu.manufacturer + ' ' + rigStatus.systemInfos.cpu.brand}>
+                                        {rigStatus.systemInfos.cpu.manufacturer} {rigStatus.systemInfos.cpu.brand}
+                                    </h3>
 
                                     {! cpuActive && <div className='badge bg-warning'>idle</div>}
                                     {cpuActive && <div className='badge bg-success'>mining</div>}
@@ -76,7 +78,9 @@ const Hardware: React.FC = function (props) {
                                     <div key={gpu.idx}>
                                         <div className='alert alert-secondary'>
                                             <div className='d-flex justify-content-between cursor-default'>
-                                                <h3 className='h5 bold m-0 truncate'>{gpu.name || gpu.model}</h3>
+                                                <h3 className='h5 bold m-0 truncate' title={gpu.name || gpu.model}>
+                                                    {gpu.name || gpu.model}
+                                                </h3>
 
                                                 {! gpuActive && <div className='badge bg-warning'>idle</div>}
                                                 {gpuActive && <div className='badge bg-success'>mining</div>}

@@ -38,6 +38,12 @@ export const SoftwareTabInfos: React.FC<{ rigStatus: RigStatus, selectedMinerNam
                             <span key={minerName} className='badge bg-secondary m-1 pointer' onClick={() => openSoftwarePopup(minerName)}>{minerName}</span>
                         );
                     })}
+
+                    {rigStatus.status.runningMiners.length === 0 && (
+                        <div className='alert alert-warning'>
+                            No active miner
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -50,6 +56,12 @@ export const SoftwareTabInfos: React.FC<{ rigStatus: RigStatus, selectedMinerNam
                             <span key={minerName} className='badge bg-secondary m-1 pointer' onClick={() => openSoftwarePopup(minerName)}>{minerName}</span>
                         );
                     })}
+
+                    {rigStatus.status.installedMiners.length === 0 && (
+                        <div className='alert alert-warning'>
+                            No installed miner
+                        </div>
+                    )}
                 </div>
 
                 <a className='btn btn-primary btn-sm' onClick={() => changeTab('run')}>Run miner...</a>
@@ -64,6 +76,12 @@ export const SoftwareTabInfos: React.FC<{ rigStatus: RigStatus, selectedMinerNam
                             <span key={minerName} className='badge bg-secondary m-1 pointer' onClick={() => changeTab('install', minerName)}>{minerName}</span>
                         );
                     })}
+
+                    {rigStatus.status.installableMiners.length === 0 && (
+                        <div className='alert alert-warning'>
+                            No installable miner
+                        </div>
+                    )}
                 </div>
 
                 <a className='btn btn-primary btn-sm' onClick={() => changeTab('install')}>Install miner...</a>

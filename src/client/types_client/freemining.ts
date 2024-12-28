@@ -54,7 +54,7 @@ export type RigStatusStatus = {
     monitorStatus: boolean,
     runnableMiners: string[],
     runningMiners: string[],
-    runningMinersAliases: {[minerName: string]: {[minerAlias: string]: RigStatusStatusRunningMinerAlias}},
+    runningMinersAliases: {[minerName: string]: {[instanceName: string]: RigStatusStatusRunningMinerAlias}},
 };
 
 export type RigStatusStatusInstalledMinerAliases = {
