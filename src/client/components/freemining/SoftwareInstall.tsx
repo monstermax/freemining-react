@@ -63,20 +63,20 @@ export const SoftwareTabInstall: React.FC<{selectedMinerName?: string | null, cl
                 })
         }
 
-    }, [minerName])
+    }, [rigHost, minerName])
 
     useEffect(() => {
         if (minerInstallableVersionsList.length > 0) {
             setMinerVersion(minerInstallableVersionsList[0])
         }
 
-    }, [minerName, minerInstallableVersionsList])
+    }, [rigHost, minerName, minerInstallableVersionsList])
 
     useEffect(() => {
         const _minerAlias = (minerName && minerVersion) ? `${minerName}-${minerVersion}` : '';
         setMinerAlias(_minerAlias);
 
-    }, [minerName, minerVersion])
+    }, [rigHost, minerName, minerVersion])
 
     useEffect(() => {
         const variables: {[variableName: string]: string | null} = {
@@ -93,7 +93,7 @@ export const SoftwareTabInstall: React.FC<{selectedMinerName?: string | null, cl
         const _installEnabled = ! Object.values(variables).some((variable => ! variable));
         setInstallEnabled(_installEnabled);
 
-    }, [minerName, minerAlias, minerVersion])
+    }, [rigHost, minerName, minerAlias, minerVersion])
 
     return (
         <>

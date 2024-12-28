@@ -101,7 +101,7 @@ const Mining: React.FC = function (props: any) {
 
                                             <div>
                                                 {minerInstanceStats?.devices.gpus.map(gpuStat => {
-                                                    const gpu: any | null = rigStatus?.systemInfos.gpus.find(gpu => gpu.idx === gpuStat.id); // BUG: les ID peuvent ne pas concorder
+                                                    const gpu: any | null = null; //rigStatus?.systemInfos.gpus.find(gpu => gpu.subDeviceId && gpu.subDeviceId === gpuStat.subDeviceId) ?? null;
 
                                                     return (
                                                         <div key={gpuStat.id} className='alert alert-secondary p-2'>

@@ -15,7 +15,7 @@ export const SoftwareTabRun: React.FC<{selectedCoin?: string | null, selectedMin
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Context GlobalProvider not found");
 
-    const { rigStatus } = context;
+    const { rigHost, rigStatus } = context;
 
     const selectedCoin = props.selectedCoin ?? null;
     const selectedMinerName = props.selectedMinerName ?? null;
@@ -135,11 +135,11 @@ export const SoftwareTabRun: React.FC<{selectedCoin?: string | null, selectedMin
         }
 
         // UPDATE ALIAS
-        const _minerAliases = rigStatus.status.installedMinersAliases[minerName].versions;
+        const _minerAliases = rigStatus.status.installedMinersAliases[minerName]?.versions || {};
         const _minersAliasesList = Object.entries(_minerAliases);
         _minersAliasesList.sort((a, b) => b[1].version.localeCompare(a[1].version));
         setMinersAliasesList(_minersAliasesList);
-        setMinerAlias(rigStatus.status.installedMinersAliases[minerName].defaultAlias);
+        setMinerAlias(rigStatus.status.installedMinersAliases[minerName]?.defaultAlias ?? null);
 
         // UPDATE ALGO
         const _algo = rigStatus.config.coinsMiners[coin][minerName]?.algo ?? '';
@@ -189,42 +189,47 @@ export const SoftwareTabRun: React.FC<{selectedCoin?: string | null, selectedMin
 
 
     useEffect(() => {
+        // HOST CHANGED
+        setWorker(rigStatus?.rig.name ?? null);
+    }, [rigHost, rigStatus, coin]);
+
+    useEffect(() => {
         // COIN CHANGED
         onCoinChanged();
-    }, [coin]);
+    }, [rigHost, rigStatus, coin]);
 
     useEffect(() => {
         // WALLETS LIST CHANGED
         const _wallet = (walletsList.length === 1) ? walletsList[0][1] : null; // si 1 seul element on le selectionne
         setWalletAddress(_wallet ?? null);
-    }, [coin, walletsList]);
+    }, [rigHost, rigStatus, coin, walletsList]);
 
     useEffect(() => {
         // WALLET CHANGED
         onWalletChanged();
-    }, [coin, walletsList]);
+    }, [rigHost, rigStatus, coin, walletsList]);
 
     useEffect(() => {
         // MINERS LIST CHANGED
         const _minerName = selectedMinerName || ((minersList.length === 1) ? minersList[0][0] : null); // si 1 seul element on le selectionne
         setMinerName(_minerName ?? null);
-    }, [coin, minersList]);
+    }, [rigHost, rigStatus, coin, minersList]);
 
     useEffect(() => {
         // MINER NAME CHANGED
         onMinerNameChanged();
-    }, [coin, minerName]);
+    }, [rigHost, rigStatus, coin, minerName]);
 
     useEffect(() => {
         // POOLS LIST CHANGED
         const _pool = null; // TODO : selectedPool || (allPoolsUrls.length === 1) ....
         setPool(_pool ?? null);
-    }, [coin, poolsList]);
+    }, [rigHost, rigStatus, coin, poolsList]);
 
     useEffect(() => {
         // POOL CHANGED
         onPoolChanged();
-    }, [coin, pool]);
+    }, [rigHost, rigStatus, coin, pool]);
 
 
     useEffect(() => {
@@ -249,7 +254,7 @@ export const SoftwareTabRun: React.FC<{selectedCoin?: string | null, selectedMin
         const _startEnabled = ! Object.values(variables).some((variable => ! variable));
         setStartEnabled(_startEnabled);
 
-    }, [coin, wallet, pool, poolUser, poolUrl, minerName, minerAlias, algo, extraArgs, worker])
+    }, [rigHost, rigStatus, coin, wallet, pool, poolUser, poolUrl, minerName, minerAlias, algo, extraArgs, worker])
 
     return (
         <>
