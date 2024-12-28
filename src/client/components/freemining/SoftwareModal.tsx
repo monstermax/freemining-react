@@ -65,8 +65,11 @@ export const SoftwareModal: React.FC<{ selectedMinerName: string, closeSoftwareP
                                                 {rigStatus.status.installedMiners.includes(selectedMinerName) && (
                                                     <>
                                                         {Object.keys(rigStatus.status.installedMinersAliases[selectedMinerName].versions).map(minerAlias => {
+                                                            //const isRunning = rigStatus.status.runningMiners.includes(selectedMinerName);
+                                                            const isRunning = Object.values(rigStatus.status.runningMinersAliases[selectedMinerName] || {}).filter(instanceDetails => instanceDetails.alias === minerAlias).length > 0;
+
                                                             return (
-                                                                <button key={minerAlias} className={`btn btn-primary btn-sm m-1 ${rigStatus.status.runningMiners.includes(selectedMinerName) ? "disabled" : ""}`} onClick={() => submitUninstallMiner(context, selectedMinerName, minerAlias)}>uninstall {minerAlias}</button>
+                                                                <button key={minerAlias} className={`btn btn-primary btn-sm m-1 ${isRunning ? "disabled" : ""}`} onClick={() => submitUninstallMiner(context, selectedMinerName, minerAlias)}>💥 uninstall {minerAlias}</button>
                                                             );
                                                         })}
                                                     </>
@@ -94,7 +97,7 @@ export const SoftwareModal: React.FC<{ selectedMinerName: string, closeSoftwareP
                                                     <>
                                                         {Object.values(rigStatus.status.runningMinersAliases[selectedMinerName]).map(minerInstance => {
                                                             return (
-                                                                <button key={minerInstance.alias} className='btn btn-primary btn-sm m-1' onClick={() => submitStopMiner(context, selectedMinerName, minerInstance.alias)}>stop {minerInstance.alias}</button>
+                                                                <button key={minerInstance.alias} className='btn btn-primary btn-sm m-1' onClick={() => submitStopMiner(context, selectedMinerName, minerInstance.alias)}>💥 stop {minerInstance.alias}</button>
                                                             );
                                                         })}
                                                     </>

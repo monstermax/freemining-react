@@ -169,6 +169,10 @@ export const LayoutHostRouter: React.FC = function () {
                     <Route index element={<Home />} />
                     <Route path="hardware" element={<Hardware />} />
                     <Route path="software" element={<Software />} />
+                    <Route path="software/install" element={<Software tabName='install' />} />
+                    <Route path="software/uninstall" element={<Software />} />
+                    <Route path="software/run" element={<Software tabName='run' />} />
+                    <Route path="software/stop" element={<Software />} />
                     <Route path="mining" element={<Mining />} />
                     <Route path="settings" element={<Settings />} />
                     <Route path="status" element={<Status />} />

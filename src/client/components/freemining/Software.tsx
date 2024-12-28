@@ -13,17 +13,19 @@ import { SoftwareModal } from './SoftwareModal';
 const bootstrap = window.bootstrap;
 
 
-const Software: React.FC = function (props: any) {
+const Software: React.FC<{tabName?: string, selectedMinerName?: string}> = function (props) {
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Context GlobalProvider not found");
 
     const { rigHost, rigStatus, installMiner, uninstallMiner, startMiner, stopMiner } = context;
+    const initialTabName = props.tabName || null;
+    const initialSelectedMinerName = props.selectedMinerName || null;
 
     const [modalOpened, setModalOpened] = useState<boolean>(false);
     const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
-    const [selectedMinerName, setSelectedMinerName] = useState<string | null>(null);
+    const [selectedMinerName, setSelectedMinerName] = useState<string | null>(initialSelectedMinerName);
     //const [selectedPool, setSelectedPool] = useState<string | null>(null);
-    const [tabName, setTabName] = useState<string>('infos');
+    const [tabName, setTabName] = useState<string>(initialTabName ?? 'infos');
 
     const openSoftwarePopup = (minerName: string) => {
         setSelectedMinerName(minerName);
@@ -77,6 +79,7 @@ const Software: React.FC = function (props: any) {
         closeSoftwarePopup();
     };
 
+    // TODO: changer les tab en routes
 
     return (
         <>
