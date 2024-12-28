@@ -84,6 +84,7 @@ export type RigStatusStatusInstalledMinerStats = {
             name: string,
             power: number,
             temperature: number,
+            subDeviceId?: string,
         }[],
     },
     miner: {
@@ -159,6 +160,7 @@ export type RigStatusSystemInfos = {
         powerLimit: number,
         temperatureGpu: number,
         vendor: string,
+        subDeviceId: string,
     }[],
     net: {
         gateway: string,
