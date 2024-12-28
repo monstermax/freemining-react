@@ -5,24 +5,25 @@ import { GlobalContext } from '../../providers/global.provider';
 import { startMiner, StartMinerOptions } from '../../lib/software_start';
 
 import type { RigStatusConfigCoin, RigStatusConfigCoinMiner, RigStatusConfigCoinMiners, RigStatusConfigCoinPool, RigStatusConfigCoinPools, RigStatusConfigCoinWallet, RigStatusConfigCoinWallets, RigStatusStatusInstalledMinerAlias, RigStatusStatusInstalledMinerAliases } from '../../types_client/freemining';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 
 // TODO: a deplacer dans une route autonome : /mining/software/run
 
 
-export const SoftwareTabRun: React.FC<{selectedCoin?: string | null, selectedMinerName?: string | null, closeSoftwarePopup: () => void, setTabName: React.Dispatch<React.SetStateAction<string>>}> = function (props) {
+export const SoftwareTabRun: React.FC<{}> = function (props) {
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Context GlobalProvider not found");
 
+    const navigate = useNavigate();
+    const location = useLocation();
+
     const { rigHost, rigStatus } = context;
 
-    const selectedCoin = props.selectedCoin ?? null;
-    const selectedMinerName = props.selectedMinerName ?? null;
-    const setTabName = props.setTabName;
-    const closeSoftwarePopup = props.closeSoftwarePopup;
+    const selectedCoin: string | null = location.state?.selectedCoin ?? null;
+    const selectedMinerName: string | null = location.state?.selectedMinerName ?? null;
 
-    const [coin, setCoin] = useState<string | null>(null)
+    const [coin, setCoin] = useState<string | null>(selectedCoin)
 
     const _minersNames = (rigStatus && coin) ? rigStatus.config.coinsMiners[coin] : {};
 
@@ -184,7 +185,7 @@ export const SoftwareTabRun: React.FC<{selectedCoin?: string | null, selectedMin
 
         startMiner(context, minerName, minerAlias, options);
 
-        setTabName('infos');
+        navigate('/mining/software');
     }
 
 
@@ -260,7 +261,9 @@ export const SoftwareTabRun: React.FC<{selectedCoin?: string | null, selectedMin
         <>
             <div className='d-flex m-2 mt-3'>
                 <h2>Run miner</h2>
-                <button type="button" className="btn-close m-2" aria-label="Close" onClick={() => setTabName('infos')}></button>
+                {/*
+                <button type="button" className="btn-close m-2" aria-label="Close" onClick={() => navigate('/mining/software')}></button>
+                */}
             </div>
 
             <div className='alert alert-info'>

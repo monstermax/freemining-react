@@ -13,6 +13,7 @@ export type StartMinerOptions = {
 
 export type StopMinerOptions = {
     confirmed?: boolean,
+    instanceName?: string,
 }
 
 
@@ -40,6 +41,7 @@ export const startMiner = (context: GlobalContextType, minerName: string, minerA
     const onFail = (minerName: string, minerAlias: string | undefined, err: any) => {};
 
     const {coin, algo, poolUrl, poolUser, extraArgs} = options;
+    const instanceNameTmp = /* options?.instanceName || */ `${minerName}-${minerAlias}`;
     let error: string | null = null;
 
     if (! coin) {
@@ -64,7 +66,7 @@ export const startMiner = (context: GlobalContextType, minerName: string, minerA
     }
 
     //const minerFullName = `${minerName}-${minerAlias}`;
-    const minerFullTitle = (minerName === minerAlias || ! minerAlias) ? minerName : `${minerName} (${minerAlias}))`;
+    //const minerFullTitle = (minerName === minerAlias || ! minerAlias) ? minerName : `${minerName} (${minerAlias}))`;
 
     const data: {[key: string]: any} = {
         action: 'start',
@@ -91,14 +93,14 @@ export const startMiner = (context: GlobalContextType, minerName: string, minerA
                     onSuccess(minerName, minerAlias, data);
                 }
 
-                alertify.success(`Miner ${minerFullTitle} started`);
+                alertify.success(`Miner ${instanceNameTmp} started`);
 
             } else {
                 if (typeof onFail === 'function') {
                     onFail(minerName, minerAlias, { message: data });
                 }
 
-                alertify.error(`Miner ${minerFullTitle} cannot be started. ${data}`);
+                alertify.error(`Miner ${instanceNameTmp} cannot be started. ${data}`);
             }
 
         })
@@ -107,7 +109,7 @@ export const startMiner = (context: GlobalContextType, minerName: string, minerA
                 onFail(minerName, minerAlias, err);
             }
 
-            alertify.error(`Miner ${minerFullTitle} cannot be started. ${err.message}`);
+            alertify.error(`Miner ${instanceNameTmp} cannot be started. ${err.message}`);
         });
 };
 
@@ -121,10 +123,15 @@ export const stopMiner = (context: GlobalContextType, minerName: string, minerAl
     const onFail = (minerName: string, minerAlias: string, err: any) => {};
 
     const confirmed = options?.confirmed || false;
+    const instanceName = options?.instanceName || `${minerName}-${minerAlias}`;
     let error: string | null = null;
 
     if (! minerName) {
-        error = `Missing {miner} parameter`;
+        error = `Missing {minerName} parameter`;
+    }
+
+    if (! instanceName) {
+        error = `Missing {instanceName} parameter`;
     }
 
     if (error) {
@@ -133,10 +140,10 @@ export const stopMiner = (context: GlobalContextType, minerName: string, minerAl
     }
 
     //const minerFullName = `${minerName}-${minerAlias}`;
-    const minerFullTitle = (minerName === minerAlias || ! minerAlias) ? minerName : `${minerName} (${minerAlias}))`;
+    //const minerFullTitle = (minerName === minerAlias || ! minerAlias) ? minerName : `${minerName} (${minerAlias}))`;
 
     function _stopMiner() {
-        alertify.success(`Stopping miner ${minerFullTitle}...`);
+        alertify.success(`Stopping miner ${instanceName}...`);
 
         if (typeof onStart === 'function') {
             onStart(minerName, minerAlias);
@@ -145,7 +152,8 @@ export const stopMiner = (context: GlobalContextType, minerName: string, minerAl
         const data: {[key: string]: any} = {
             action: 'stop',
             miner: minerName,
-            minerAlias,
+            alias: minerAlias,
+            instanceName,
         };
 
         const url = `http://${context.rigHost}/rig/miners/${minerName}/run`;
@@ -157,14 +165,14 @@ export const stopMiner = (context: GlobalContextType, minerName: string, minerAl
                         onSuccess(minerName, minerAlias, data);
                     }
 
-                    alertify.success(`Miner ${minerFullTitle} stopped<hr />`);
+                    alertify.success(`Miner ${instanceName} stopped<hr />`);
 
                 } else {
                     if (typeof onFail === 'function') {
                         onFail(minerName, minerAlias, { message: data });
                     }
 
-                    alertify.error(`Miner ${minerFullTitle} cannot be stopped. ${data}`);
+                    alertify.error(`Miner ${instanceName} cannot be stopped. ${data}`);
                 }
 
             })
@@ -173,7 +181,7 @@ export const stopMiner = (context: GlobalContextType, minerName: string, minerAl
                     onFail(minerName, minerAlias, err);
                 }
 
-                alertify.error(`Miner ${minerFullTitle} cannot be stopped. ${err.message}`);
+                alertify.error(`Miner ${instanceName} cannot be stopped. ${err.message}`);
             });
     }
 
@@ -181,7 +189,7 @@ export const stopMiner = (context: GlobalContextType, minerName: string, minerAl
         _stopMiner();
 
     } else {
-        alertify.confirm("<b>Miner stopping - confirmation</b>", `Do you want to stop the miner '<b>${minerFullTitle}</b>' ?`,
+        alertify.confirm("<b>Miner stopping - confirmation</b>", `Do you want to stop the miner '<b>${instanceName}</b>' ?`,
             _stopMiner,
             () => { /* alertify.error('Cancel'); */ }
         );

@@ -31,7 +31,7 @@ const Hardware: React.FC = function (props) {
 
                 {rigStatus && 
                     <>
-                        <div className='alert alert-info m-2 mt-3 mb-3'>
+                        <div className='alert alert-info m-2 mt-3 mb-3 p-2'>
                             <h2 className='h4 cursor-default'>CPU :</h2>
 
                             <div className='alert alert-secondary'>
@@ -58,7 +58,7 @@ const Hardware: React.FC = function (props) {
                             </div>
                         </div>
 
-                        <div className='alert alert-info m-2 mt-3'>
+                        <div className='alert alert-info m-2 mt-3 p-2'>
                             <h2 className='h4 cursor-default'>GPUS ({rigStatus.systemInfos.gpus.length}) :</h2>
 
                             {rigStatus.systemInfos.gpus.map((gpu) => {

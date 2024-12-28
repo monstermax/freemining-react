@@ -5,30 +5,37 @@ import { GlobalContext } from '../../providers/global.provider';
 
 import type { RigStatusConfigCoinMiner, RigStatusStatusInstalledMinerAlias } from '../../types_client/freemining';
 import { installMiner, InstallMinerOptions } from '../../lib/software_install';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { fetchJson } from '../../lib/utils.client';
 
 
 // TODO: a deplacer dans une route autonome : /mining/software/install
 
 
-export const SoftwareTabInstall: React.FC<{selectedMinerName?: string | null, closeSoftwarePopup: () => void, setTabName: React.Dispatch<React.SetStateAction<string>>}> = function (props) {
+export const SoftwareTabInstall: React.FC<{}> = function (props) {
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Context GlobalProvider not found");
 
+    const navigate = useNavigate();
+    const location = useLocation();
+
     const { rigHost, rigStatus } = context;
 
-    const runnableMinersNames: string[] = !rigStatus ? [] : rigStatus?.status.installableMiners
-        .filter(minerName => rigStatus?.status.runnableMiners.includes(minerName))
-        .filter(minerName => rigStatus?.status.managedMiners.includes(minerName));
+    const selectedCoin: string | null = location.state?.selectedCoin ?? null;
 
-    const selectedMinerName = (props.selectedMinerName && runnableMinersNames.includes(props.selectedMinerName)) ? props.selectedMinerName : null;
-    const setTabName = props.setTabName;
-    const closeSoftwarePopup = props.closeSoftwarePopup;
+    const _runnableMinersNames: string[] = !rigStatus ? [] : rigStatus.status.installableMiners
+        .filter(minerName => rigStatus.status.runnableMiners.includes(minerName))
+        .filter(minerName => rigStatus.status.managedMiners.includes(minerName))
+        .filter(minerName => ! selectedCoin ? true : minerName in (rigStatus.config.coinsMiners[selectedCoin] || {}));
 
-    const [minersList, setMinersList] = useState<[string, RigStatusConfigCoinMiner][]>(rigStatus ? runnableMinersNames.map(minerName => [minerName, rigStatus.config.miners[minerName]]) : []);
-    const [minerName, setMinerName] = useState<string | null>(selectedMinerName);
-    const [minersAliasesList, setMinersAliasesList] = useState<[string, RigStatusStatusInstalledMinerAlias][]>([]);
+    const [runnableMinersNames, setRunnableMinersNames] = useState<string[]>(_runnableMinersNames);
+
+    const _selectedMinerName: string | null = (location.state?.selectedMinerName && runnableMinersNames.includes(location.state?.selectedMinerName)) ? location.state?.selectedMinerName : null;
+    const _minersList: [string, RigStatusConfigCoinMiner][] = rigStatus ? runnableMinersNames.map(minerName => [minerName, rigStatus.config.miners[minerName]]) : [];
+
+    const [minersList, setMinersList] = useState<[string, RigStatusConfigCoinMiner][]>(_minersList);
+    const [minerName, setMinerName] = useState<string | null>(_selectedMinerName);
+    const [minersAliasesList, setMinersAliasesList] = useState<[string, RigStatusStatusInstalledMinerAlias][]>([]); // TODO: verifier qu'il existe pas deja un alias identique quand on lance une nouvelle install
     const [minerAlias, setMinerAlias] = useState<string | null>(null);
     const [minerInstallableVersionsList, setMinerInstallableVersionsList] = useState<string[]>([]);
     const [minerVersion, setMinerVersion] = useState<string | null>(null);
@@ -45,12 +52,30 @@ export const SoftwareTabInstall: React.FC<{selectedMinerName?: string | null, cl
 
         installMiner(context, minerName, minerAlias, options);
 
-        setTabName('infos');
+        navigate('/mining/software');
     }
+
+    useEffect(() => {
+        const _minersList: [string, RigStatusConfigCoinMiner][] = rigStatus ? runnableMinersNames.map(minerName => [minerName, rigStatus.config.miners[minerName]]) : [];
+        setMinersList(_minersList);
+
+        const _runnableMinersNames: string[] = !rigStatus ? [] : rigStatus.status.installableMiners
+            .filter(minerName => rigStatus.status.runnableMiners.includes(minerName))
+            .filter(minerName => rigStatus.status.managedMiners.includes(minerName))
+            .filter(minerName => ! selectedCoin ? true : minerName in (rigStatus.config.coinsMiners[selectedCoin] || {}));
+        setRunnableMinersNames(_runnableMinersNames);
+
+        const _selectedMinerName = (location.state?.selectedMinerName && _runnableMinersNames.includes(location.state?.selectedMinerName)) ? location.state?.selectedMinerName : null;
+
+        if (minerName === location.state?.selectedMinerName && ! _selectedMinerName) {
+            setMinerName(null);
+        }
+    }, [rigHost, rigStatus]);
 
     useEffect(() => {
         setMinerVersion(null);
         setMinerInstallableVersionsList([]);
+        setMinersAliasesList([]);
 
         if (minerName) {
             const url = `http://${rigHost}/rig/config/miners/${minerName}/installable-versions`;
@@ -61,7 +86,11 @@ export const SoftwareTabInstall: React.FC<{selectedMinerName?: string | null, cl
                 })
                 .catch((err: any) => {
                 })
+
+            const _minersAliasesList: [string, RigStatusStatusInstalledMinerAlias][] = Object.values(rigStatus?.status.installedMinersAliases[minerName]?.versions || {}).map(version => [version.alias, version]);
+            setMinersAliasesList(_minersAliasesList);
         }
+
 
     }, [rigHost, minerName])
 
@@ -73,7 +102,7 @@ export const SoftwareTabInstall: React.FC<{selectedMinerName?: string | null, cl
     }, [rigHost, minerName, minerInstallableVersionsList])
 
     useEffect(() => {
-        const _minerAlias = (minerName && minerVersion) ? `${minerName}-${minerVersion}` : '';
+        const _minerAlias = (minerName && minerVersion) ? `${minerName}-${minerVersion}` : null;
         setMinerAlias(_minerAlias);
 
     }, [rigHost, minerName, minerVersion])
@@ -99,7 +128,9 @@ export const SoftwareTabInstall: React.FC<{selectedMinerName?: string | null, cl
         <>
             <div className='d-flex m-2 mt-3'>
                 <h2>Install miner</h2>
-                <button type="button" className="btn-close m-2" aria-label="Close" onClick={() => setTabName('infos')}></button>
+                {/*
+                <button type="button" className="btn-close m-2" aria-label="Close" onClick={() => navigate('/mining/software')}></button>
+                */}
             </div>
 
             <div className='alert alert-info'>

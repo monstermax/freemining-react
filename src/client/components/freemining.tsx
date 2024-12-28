@@ -14,6 +14,9 @@ import { RigStatus } from "../types_client/freemining";
 import Mining from "./freemining/Mining";
 import Settings from "./freemining/Settings";
 import Status from "./freemining/Status";
+import Coins from "./freemining/Coins";
+import { SoftwareTabInstall } from "./freemining/SoftwareInstall";
+import { SoftwareTabRun } from "./freemining/SoftwareRun";
 
 
 export const Freemining: React.FC = function () {
@@ -169,11 +172,12 @@ export const LayoutHostRouter: React.FC = function () {
                     <Route index element={<Home />} />
                     <Route path="hardware" element={<Hardware />} />
                     <Route path="software" element={<Software />} />
-                    <Route path="software/install" element={<Software tabName='install' />} />
+                    <Route path="software/install" element={<SoftwareTabInstall />} />
                     <Route path="software/uninstall" element={<Software />} />
-                    <Route path="software/run" element={<Software tabName='run' />} />
+                    <Route path="software/run" element={<SoftwareTabRun />} />
                     <Route path="software/stop" element={<Software />} />
                     <Route path="mining" element={<Mining />} />
+                    <Route path="coins" element={<Coins />} />
                     <Route path="settings" element={<Settings />} />
                     <Route path="status" element={<Status />} />
                     <Route path="*" element={<NoPage />} />

@@ -7,25 +7,25 @@ import { SoftwareTabRun } from './SoftwareRun';
 import { SoftwareTabInstall } from './SoftwareInstall';
 import { SoftwareTabInfos } from './SoftwareInfos';
 import { SoftwareModal } from './SoftwareModal';
+import { useNavigate } from 'react-router-dom';
 
 
 // @ts-ignore
 const bootstrap = window.bootstrap;
 
 
-const Software: React.FC<{tabName?: string, selectedMinerName?: string}> = function (props) {
+const Software: React.FC<{}> = function (props) {
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Context GlobalProvider not found");
 
-    const { rigHost, rigStatus, installMiner, uninstallMiner, startMiner, stopMiner } = context;
-    const initialTabName = props.tabName || null;
-    const initialSelectedMinerName = props.selectedMinerName || null;
+    const navigate = useNavigate();
+
+    const { rigStatus } = context;
 
     const [modalOpened, setModalOpened] = useState<boolean>(false);
     const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
-    const [selectedMinerName, setSelectedMinerName] = useState<string | null>(initialSelectedMinerName);
+    const [selectedMinerName, setSelectedMinerName] = useState<string | null>(null);
     //const [selectedPool, setSelectedPool] = useState<string | null>(null);
-    const [tabName, setTabName] = useState<string>(initialTabName ?? 'infos');
 
     const openSoftwarePopup = (minerName: string) => {
         setSelectedMinerName(minerName);
@@ -44,6 +44,7 @@ const Software: React.FC<{tabName?: string, selectedMinerName?: string}> = funct
         }
 
         setModalOpened(false);
+        setSelectedMinerName(null);
     }
 
     useEffect(() => {
@@ -65,18 +66,14 @@ const Software: React.FC<{tabName?: string, selectedMinerName?: string}> = funct
         if (! context.rigHost) return;
         //console.log(`showInstallMiner ${minerName}`);
 
-        setSelectedMinerName(minerName);
-        setTabName('install');
-        closeSoftwarePopup();
+        navigate('/mining/software/install');
     };
 
     const showStartMiner = (context: GlobalContextType, minerName: string) => {
         if (! context.rigHost) return;
         //console.log(`showStartMiner ${minerName}`)
 
-        setSelectedMinerName(minerName);
-        setTabName('run');
-        closeSoftwarePopup();
+        navigate('/mining/software/run');
     };
 
     // TODO: changer les tab en routes
@@ -88,30 +85,8 @@ const Software: React.FC<{tabName?: string, selectedMinerName?: string}> = funct
 
                 {rigStatus && 
                     <>
-                        {/*
-                        <div>
-                            <button onClick={() => setTabName('infos')}>infos</button>
-                            <button onClick={() => setTabName('install')}>install</button>
-                            <button onClick={() => setTabName('run')}>run</button>
-                        </div>
-                        */}
-
                         <div className='m-2 mt-3'>
-                            {tabName === 'infos' && (
-                                <SoftwareTabInfos rigStatus={rigStatus} selectedMinerName={selectedMinerName} setSelectedMinerName={setSelectedMinerName} openSoftwarePopup={openSoftwarePopup} closeSoftwarePopup={closeSoftwarePopup} setTabName={setTabName} />
-                            )}
-
-                            {tabName === 'run' && (
-                                <>
-                                    <SoftwareTabRun selectedCoin={selectedCoin} selectedMinerName={selectedMinerName} closeSoftwarePopup={closeSoftwarePopup} setTabName={setTabName} />
-                                </>
-                            )}
-
-                            {tabName === 'install' && (
-                                <>
-                                    <SoftwareTabInstall selectedMinerName={selectedMinerName} closeSoftwarePopup={closeSoftwarePopup} setTabName={setTabName} />
-                                </>
-                            )}
+                            <SoftwareTabInfos rigStatus={rigStatus} openSoftwarePopup={openSoftwarePopup} />
                         </div>
 
 

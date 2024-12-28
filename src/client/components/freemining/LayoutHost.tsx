@@ -91,10 +91,13 @@ const LayoutHost: React.FC = function (props) {
                     <Link to="/mining/hardware" className={`nav-link ${location.pathname === '/mining/hardware' ? "active" : ""}`}>Hardware</Link>
                 </li>
                 <li className='nav-tem'>
-                    <Link to="/mining/software" className={`nav-link ${location.pathname === '/mining/software' ? "active" : ""}`}>Software</Link>
+                    <Link to="/mining/software" className={`nav-link ${location.pathname.startsWith('/mining/software') ? "active" : ""}`}>Software</Link>
                 </li>
                 <li className='nav-tem'>
                     <Link to="/mining/mining" className={`nav-link ${location.pathname === '/mining/mining' ? "active" : ""}`}>Mining</Link>
+                </li>
+                <li className='nav-tem'>
+                    <Link to="/mining/coins" className={`nav-link ${location.pathname === '/mining/coins' ? "active" : ""}`}>Coins</Link>
                 </li>
                 <li className='nav-tem'>
                     <Link to="/mining/settings" className={`nav-link ${location.pathname === '/mining/settings' ? "active" : ""}`}>Settings</Link>

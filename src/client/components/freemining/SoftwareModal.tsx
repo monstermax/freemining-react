@@ -37,7 +37,7 @@ export const SoftwareModal: React.FC<{ selectedMinerName: string, closeSoftwareP
                 <div className="modal-dialog">
                     <div className="modal-content">
                         <div className="modal-header">
-                            {selectedMinerName}
+                            <h2 className='h4'>{selectedMinerName}</h2>
 
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>

@@ -3,12 +3,16 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import { GlobalContext, GlobalContextType } from '../../providers/global.provider';
 import { formatNumber } from '../../lib/utils.client';
+import { stopMiner } from '../../lib/software_start';
+import { useNavigate } from 'react-router-dom';
 
 
 
 const Mining: React.FC = function (props: any) {
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Context GlobalProvider not found");
+
+    const navigate = useNavigate();
 
     const { rigHost, rigStatus } = context;
 
@@ -31,17 +35,18 @@ const Mining: React.FC = function (props: any) {
                             {Object.entries(minerInstances).map(instanceEntry => {
                                 const [instanceName, instanceDetails] = instanceEntry;
                                 const minerInstanceStats = rigStatus?.status.minersStats[instanceName];
-                                const coinName = instanceDetails.params.coin;
-                                const coinDetails = rigStatus?.config.coins[coinName];
+                                const coin = instanceDetails.params.coin;
+                                const minerAlias = instanceDetails.alias;
+                                const coinDetails = rigStatus?.config.coins[coin];
 
                                 return (
                                     <div key={instanceName} className='alert alert-info mb-3'>
                                         <div className='d-flex'>
                                             <div>
                                                 <h2 className='h4'>
-                                                    <img src={`http://${rigHost}/img/coins/${coinName}.webp`} alt={coinName} style={{ height: '32px' }} />
+                                                    <img src={`http://${rigHost}/img/coins/${coin}.webp`} alt={coin} style={{ height: '32px' }} />
 
-                                                    <span className='m-2 cursor-default'>{coinDetails?.coinName || coinName}</span>
+                                                    <span className='m-2 cursor-default'>{coinDetails?.coinName || coin}</span>
                                                 </h2>
                                             </div>
                                             <div className='ms-auto'>
@@ -59,14 +64,14 @@ const Mining: React.FC = function (props: any) {
                                                 <li>
                                                     <b>Alias:</b>
                                                     &nbsp;
-                                                    <span>{instanceDetails.alias}</span>
+                                                    <span>{minerAlias}</span>
                                                 </li>
                                             </ul>
                                             <ul>
                                                 <li>
                                                     <b>Coin:</b>
                                                     &nbsp;
-                                                    <span>{coinName || 'n/a'}</span>
+                                                    <span>{coin || 'n/a'}</span>
                                                 </li>
                                                 <li>
                                                     <b>Algo:</b>
@@ -74,6 +79,10 @@ const Mining: React.FC = function (props: any) {
                                                     <span>{instanceDetails.params.algo}</span>
                                                 </li>
                                             </ul>
+
+                                            <div className='ms-auto'>
+                                                <button type="button" className="btn btn-danger btn-sm" onClick={() => stopMiner(context, minerName, minerAlias, { instanceName }) }>stop</button>
+                                            </div>
                                         </div>
 
                                         <div>
@@ -90,9 +99,9 @@ const Mining: React.FC = function (props: any) {
                                                             </div>
 
                                                             <div className='cursor-default'>
-                                                                <span className='badge bg-secondary m-1'><b>Temperature:</b> {(! isNaN(Number(cpuStat.temperature))) ? formatNumber(cpuStat.temperature) : 'n/a'}</span>
-                                                                <span className='badge bg-secondary m-1'><b>Fan Speed:</b> {(! isNaN(Number(cpuStat.fanSpeed))) ? formatNumber(cpuStat.fanSpeed) : 'n/a'}</span>
-                                                                <span className='badge bg-secondary m-1'><b>Power:</b> {(! isNaN(Number(cpuStat.power))) ? formatNumber(cpuStat.power) : 'n/a'}</span>
+                                                                <span className='badge bg-secondary m-1'><b>Temp:</b> {(! isNaN(Number(cpuStat.temperature))) ? `${formatNumber(cpuStat.temperature)}°` : 'n/a'}</span>
+                                                                <span className='badge bg-secondary m-1'><b>Fan:</b> {(! isNaN(Number(cpuStat.fanSpeed))) ? `${formatNumber(cpuStat.fanSpeed)}%` : 'n/a'}</span>
+                                                                <span className='badge bg-secondary m-1'><b>Power:</b> {(! isNaN(Number(cpuStat.power))) ? `${formatNumber(cpuStat.power)} W` : 'n/a'}</span>
                                                             </div>
                                                         </div>
                                                     );
@@ -114,9 +123,9 @@ const Mining: React.FC = function (props: any) {
                                                             </div>
 
                                                             <div className='cursor-default'>
-                                                                <span className='badge bg-secondary m-1'><b>Temperature:</b> {(! isNaN(Number(gpuStat.temperature))) ? formatNumber(gpuStat.temperature) : 'n/a'}</span>
-                                                                <span className='badge bg-secondary m-1'><b>Fan Speed:</b> {(! isNaN(Number(gpuStat.fanSpeed))) ? formatNumber(gpuStat.fanSpeed) : 'n/a'}</span>
-                                                                <span className='badge bg-secondary m-1'><b>Power:</b> {(! isNaN(Number(gpuStat.power))) ? formatNumber(gpuStat.power) : 'n/a'}</span>
+                                                                <span className='badge bg-secondary m-1'><b>Temp:</b> {(! isNaN(Number(gpuStat.temperature))) ? `${formatNumber(gpuStat.temperature)}°` : 'n/a'}</span>
+                                                                <span className='badge bg-secondary m-1'><b>Fan:</b> {(! isNaN(Number(gpuStat.fanSpeed))) ? `${formatNumber(gpuStat.fanSpeed)}%` : 'n/a'}</span>
+                                                                <span className='badge bg-secondary m-1'><b>Power:</b> {(! isNaN(Number(gpuStat.power))) ? `${formatNumber(gpuStat.power)} W` : 'n/a'}</span>
                                                             </div>
                                                         </div>
                                                     );
@@ -136,13 +145,11 @@ const Mining: React.FC = function (props: any) {
                     </div>
                 )}
 
-            </div>
+                <div className='my-1 alert alert-info p-2'>
+                    <a className='btn btn-primary btn-sm m-1' onClick={() => navigate('/mining/software/run') }>Run miner...</a>
+                </div>
 
-            {/*
-            <div>
-                <a className='btn btn-primary btn-sm' onClick={() => changeTab('run')}>Run miner...</a>
             </div>
-            */}
         </>
     );
 }
