@@ -1,11 +1,10 @@
 
-import React, { useContext, useEffect, useState } from 'react';
-
-import { GlobalContext, GlobalContextType } from '../../providers/global.provider';
-import { formatNumber } from '../../lib/utils.client';
-import { stopMiner } from '../../lib/software_start';
+import React, { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RigStatusConfigCoinPools, RigStatusConfigCoinsWallets } from '../../types_client/freemining';
+
+import { GlobalContext } from '../../providers/global.provider';
+
+import type { RigStatusConfigCoinPools, RigStatusConfigCoinsWallets } from '../../types_client/freemining';
 
 
 

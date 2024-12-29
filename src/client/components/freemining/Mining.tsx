@@ -1,10 +1,10 @@
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import { GlobalContext, GlobalContextType } from '../../providers/global.provider';
+import { GlobalContext } from '../../providers/global.provider';
 import { formatNumber } from '../../lib/utils.client';
 import { stopMiner } from '../../lib/software_start';
-import { useNavigate } from 'react-router-dom';
 
 
 

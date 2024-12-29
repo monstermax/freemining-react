@@ -1,7 +1,7 @@
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 
-import { GlobalContext, GlobalContextType } from '../../providers/global.provider';
+import { GlobalContext } from '../../providers/global.provider';
 
 
 

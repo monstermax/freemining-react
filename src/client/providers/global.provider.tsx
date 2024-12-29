@@ -44,7 +44,9 @@ interface GlobalProviderProps {
 
 
 export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
-    const [rigHost, setRigHost] = useState<string | null>(null);
+    const lastHost = localStorage.getItem('lastHost') || null;
+
+    const [rigHost, setRigHost] = useState<string | null>(lastHost);
     const [rigStatus, setRigStatus] = useState<RigStatus | null>(null);
     const [rigStatusLoading, setRigStatusLoading] = useState<boolean>(false);
 

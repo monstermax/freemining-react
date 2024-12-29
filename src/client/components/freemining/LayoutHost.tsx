@@ -27,13 +27,22 @@ const LayoutHost: React.FC = function (props) {
             })
     }
 
+    const disconnectHost = () => {
+        localStorage.removeItem('lastHost');
+        setRigHost(null);
+    }
+
     const location = useLocation();
 
     useEffect(() => {
-        if (rigHost && ! favoritesHosts.includes(rigHost)) {
-            setFavoritesHosts((hosts) => [... new Set([...hosts, rigHost])]);
+        if (rigHost) {
+            localStorage.setItem('lastHost', rigHost);
+
+            if (! favoritesHosts.includes(rigHost)) {
+                setFavoritesHosts((hosts) => [... new Set([...hosts, rigHost])]);
+            }
         }
-    }, []);
+    }, [rigHost]);
 
     useEffect(() => {
         window.localStorage.setItem('favoritesHosts', JSON.stringify(favoritesHosts));
@@ -43,14 +52,14 @@ const LayoutHost: React.FC = function (props) {
         <>
 
             <nav className='navbar navbar-expand-lg bg-dark text-light mb-1 p-1'>
-                <h1 className='h2 cursor-default' onClick={() => navigate(appPath)}>Riggle</h1>
+                <h1 className='h2 pointer' onClick={() => navigate(appPath)}>Riggle</h1>
 
                 <div className='ms-auto d-flex'>
                     {!rigStatus && (
                         <div className={`badge bg-danger m-1 cursor-default`}>
                             <span className='m-1'>{rigHost}</span>
 
-                            <button type="button" className="btn-close m-1 pointer" aria-label="Close" onClick={() => setRigHost(null)}></button>
+                            <button type="button" className="btn-close m-1 pointer" aria-label="Close" onClick={() => disconnectHost()}></button>
                         </div>
                     )}
 
@@ -75,7 +84,7 @@ const LayoutHost: React.FC = function (props) {
                                     })}
 
                                     <li key={'no host'} className='p-1'>
-                                        <button className='btn btn-danger btn-sm w-100' onClick={() => setRigHost(null)}>disconnect</button>
+                                        <button className='btn btn-danger btn-sm w-100' onClick={() => disconnectHost()}>disconnect</button>
                                     </li>
                                 </ul>
                             </div>

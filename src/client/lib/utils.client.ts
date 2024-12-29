@@ -1,8 +1,6 @@
 
 
-import { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { GlobalContext } from '../providers/global.provider';
+import { useEffect, useState } from 'react';
 
 
 type fetchDataOptions = {

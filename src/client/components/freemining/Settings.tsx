@@ -1,8 +1,9 @@
 
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
-import { GlobalContext, GlobalContextType } from '../../providers/global.provider';
-import { RigStatusConfigCoinPools, RigStatusConfigCoinsWallets } from '../../types_client/freemining';
+import { GlobalContext } from '../../providers/global.provider';
+
+import type { RigStatusConfigCoinPools, RigStatusConfigCoinsWallets } from '../../types_client/freemining';
 
 
 

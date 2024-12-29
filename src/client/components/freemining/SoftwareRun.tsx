@@ -1,11 +1,11 @@
 
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { GlobalContext } from '../../providers/global.provider';
 import { startMiner, StartMinerOptions } from '../../lib/software_start';
 
 import type { RigStatusConfigCoin, RigStatusConfigCoinMiner, RigStatusConfigCoinPool, RigStatusConfigCoinPools, RigStatusConfigCoinWallet, RigStatusConfigCoinWallets, RigStatusStatusInstalledMinerAlias } from '../../types_client/freemining';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 
 export const SoftwareRun: React.FC<{}> = function (props) {
