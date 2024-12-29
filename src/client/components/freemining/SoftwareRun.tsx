@@ -62,7 +62,7 @@ export const SoftwareRun: React.FC<{}> = function (props) {
 
     const onCoinChanged = () => {
         // Update WALLET
-        const _wallets: RigStatusConfigCoinWallets = (rigStatus && coin) ? rigStatus.config.coinsWallets[coin] : {};
+        const _wallets: RigStatusConfigCoinWallets = (rigStatus && coin) ? (rigStatus.config.coinsWallets[coin] || {}) : {};
         const _walletsList: [string, string][] = Object.entries(_wallets);
         setWalletsList(_walletsList);
 
