@@ -14,7 +14,7 @@ const Mining: React.FC = function (props: any) {
 
     const navigate = useNavigate();
 
-    const { rigHost, rigStatus } = context;
+    const { appPath, rigHost, rigStatus } = context;
 
 
     return (
@@ -43,7 +43,7 @@ const Mining: React.FC = function (props: any) {
                                     <div key={instanceName} className='alert alert-info mb-3'>
                                         <div className='d-flex'>
                                             <div>
-                                                <h2 className='h4'>
+                                                <h2 className='h4 truncate mb-1'>
                                                     <img src={`http://${rigHost}/img/coins/${coin}.webp`} alt={coin} style={{ height: '32px' }} />
 
                                                     <span className='m-2 cursor-default'>{coinDetails?.coinName || coin}</span>
@@ -55,7 +55,7 @@ const Mining: React.FC = function (props: any) {
                                         </div>
 
                                         <div className='d-flex cursor-default'>
-                                            <ul>
+                                            <ul className='nav flex-column m-2'>
                                                 <li>
                                                     <b>Miner:</b>
                                                     &nbsp;
@@ -67,7 +67,8 @@ const Mining: React.FC = function (props: any) {
                                                     <span>{minerAlias}</span>
                                                 </li>
                                             </ul>
-                                            <ul>
+
+                                            <ul className='nav flex-column m-2'>
                                                 <li>
                                                     <b>Coin:</b>
                                                     &nbsp;
@@ -89,7 +90,7 @@ const Mining: React.FC = function (props: any) {
                                             <div>
                                                 {minerInstanceStats?.devices.cpus.map(cpuStat => {
                                                     return (
-                                                        <div key={cpuStat.id} className='alert alert-secondary p-2'>
+                                                        <div key={cpuStat.id} className='alert alert-secondary p-2 mb-0 mt-2'>
                                                             <div className='d-flex justify-content-between cursor-default'>
                                                                 <h3 className='h5 bold m-0 truncate' title={cpuStat.name}>
                                                                     {cpuStat.name}
@@ -113,7 +114,7 @@ const Mining: React.FC = function (props: any) {
                                                     const gpu: any | null = null; //rigStatus?.systemInfos.gpus.find(gpu => gpu.subDeviceId && gpu.subDeviceId === gpuStat.subDeviceId) ?? null;
 
                                                     return (
-                                                        <div key={gpuStat.id} className='alert alert-secondary p-2'>
+                                                        <div key={gpuStat.id} className='alert alert-secondary p-2 mb-0 mt-2'>
                                                             <div className='d-flex justify-content-between cursor-default'>
                                                                 <h3 className='h5 bold m-0 truncate'>
                                                                     {gpu?.name || gpu?.model || gpuStat.name}
@@ -146,7 +147,7 @@ const Mining: React.FC = function (props: any) {
                 )}
 
                 <div className='my-1 alert alert-info p-2'>
-                    <a className='btn btn-primary btn-sm m-1' onClick={() => navigate('/mining/software/run') }>Run miner...</a>
+                    <a className='btn btn-primary btn-sm m-1' onClick={() => navigate(`${appPath}/software/run`) }>Run miner...</a>
                 </div>
 
             </div>

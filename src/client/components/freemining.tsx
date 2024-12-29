@@ -15,8 +15,8 @@ import Mining from "./freemining/Mining";
 import Settings from "./freemining/Settings";
 import Status from "./freemining/Status";
 import Coins from "./freemining/Coins";
-import { SoftwareTabInstall } from "./freemining/SoftwareInstall";
-import { SoftwareTabRun } from "./freemining/SoftwareRun";
+import { SoftwareInstall } from "./freemining/SoftwareInstall";
+import { SoftwareRun } from "./freemining/SoftwareRun";
 
 
 export const Freemining: React.FC = function () {
@@ -48,10 +48,12 @@ export const LayoutNoHost: React.FC = function () {
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Context GlobalProvider not found");
 
-    const { defaultRigHost, rigHost, setRigHost } = context;
+    const { rigHost, setRigHost } = context;
+    const { favoritesHosts } = context;
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const { favoritesHosts } = context;
+    const [defaultRigHost, setDefaultRigHost] = useState<string | null>('127.0.0.1');
+
 
     useEffect(() => {
         inputRef.current?.focus();
@@ -68,7 +70,7 @@ export const LayoutNoHost: React.FC = function () {
     return (
         <>
 
-            <nav className='navbar navbar-expand-lg bg-secondary text-light mb-1 p-1 rounded'>
+            <nav className='navbar navbar-expand-lg bg-dark text-light mb-1 p-1'>
                 <h1 className='h2 cursor-default'>Riggle</h1>
 
                 <div className="ms-auto">
@@ -100,7 +102,7 @@ export const LayoutNoHost: React.FC = function () {
 
                             {favoritesHosts.map(host => {
                                 return (
-                                    <button key={host} type="button" className="btn btn-outline-secondary m-1" onClick={(event) => setRigHost(host)}>{host}</button>
+                                    <button key={host} type="button" className="btn btn-outline-secondary m-1" onClick={(event) => setRigHost(host)}>{host.replace(':1234', '')}</button>
                                 );
                             })}
                         </div>
@@ -172,9 +174,9 @@ export const LayoutHostRouter: React.FC = function () {
                     <Route index element={<Home />} />
                     <Route path="hardware" element={<Hardware />} />
                     <Route path="software" element={<Software />} />
-                    <Route path="software/install" element={<SoftwareTabInstall />} />
+                    <Route path="software/install" element={<SoftwareInstall />} />
                     <Route path="software/uninstall" element={<Software />} />
-                    <Route path="software/run" element={<SoftwareTabRun />} />
+                    <Route path="software/run" element={<SoftwareRun />} />
                     <Route path="software/stop" element={<Software />} />
                     <Route path="mining" element={<Mining />} />
                     <Route path="coins" element={<Coins />} />

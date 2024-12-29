@@ -4,21 +4,18 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { GlobalContext } from '../../providers/global.provider';
 import { startMiner, StartMinerOptions } from '../../lib/software_start';
 
-import type { RigStatusConfigCoin, RigStatusConfigCoinMiner, RigStatusConfigCoinMiners, RigStatusConfigCoinPool, RigStatusConfigCoinPools, RigStatusConfigCoinWallet, RigStatusConfigCoinWallets, RigStatusStatusInstalledMinerAlias, RigStatusStatusInstalledMinerAliases } from '../../types_client/freemining';
+import type { RigStatusConfigCoin, RigStatusConfigCoinMiner, RigStatusConfigCoinPool, RigStatusConfigCoinPools, RigStatusConfigCoinWallet, RigStatusConfigCoinWallets, RigStatusStatusInstalledMinerAlias } from '../../types_client/freemining';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 
-// TODO: a deplacer dans une route autonome : /mining/software/run
-
-
-export const SoftwareTabRun: React.FC<{}> = function (props) {
+export const SoftwareRun: React.FC<{}> = function (props) {
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Context GlobalProvider not found");
 
     const navigate = useNavigate();
     const location = useLocation();
 
-    const { rigHost, rigStatus } = context;
+    const { appPath, rigHost, rigStatus } = context;
 
     const selectedCoin: string | null = location.state?.selectedCoin ?? null;
     const selectedMinerName: string | null = location.state?.selectedMinerName ?? null;
@@ -185,7 +182,7 @@ export const SoftwareTabRun: React.FC<{}> = function (props) {
 
         startMiner(context, minerName, minerAlias, options);
 
-        navigate('/mining/software');
+        navigate(`${appPath}/software`);
     }
 
 
@@ -262,7 +259,7 @@ export const SoftwareTabRun: React.FC<{}> = function (props) {
             <div className='d-flex m-2 mt-3'>
                 <h2>Run miner</h2>
                 {/*
-                <button type="button" className="btn-close m-2" aria-label="Close" onClick={() => navigate('/mining/software')}></button>
+                <button type="button" className="btn-close m-2" aria-label="Close" onClick={() => navigate(`${appPath}/software`)}></button>
                 */}
             </div>
 

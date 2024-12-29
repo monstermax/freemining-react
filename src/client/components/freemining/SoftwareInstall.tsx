@@ -9,17 +9,14 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { fetchJson } from '../../lib/utils.client';
 
 
-// TODO: a deplacer dans une route autonome : /mining/software/install
-
-
-export const SoftwareTabInstall: React.FC<{}> = function (props) {
+export const SoftwareInstall: React.FC<{}> = function (props) {
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Context GlobalProvider not found");
 
     const navigate = useNavigate();
     const location = useLocation();
 
-    const { rigHost, rigStatus } = context;
+    const { appPath, rigHost, rigStatus } = context;
 
     const selectedCoin: string | null = location.state?.selectedCoin ?? null;
 
@@ -52,7 +49,7 @@ export const SoftwareTabInstall: React.FC<{}> = function (props) {
 
         installMiner(context, minerName, minerAlias, options);
 
-        navigate('/mining/software');
+        navigate(`${appPath}/software`);
     }
 
     useEffect(() => {
@@ -129,7 +126,7 @@ export const SoftwareTabInstall: React.FC<{}> = function (props) {
             <div className='d-flex m-2 mt-3'>
                 <h2>Install miner</h2>
                 {/*
-                <button type="button" className="btn-close m-2" aria-label="Close" onClick={() => navigate('/mining/software')}></button>
+                <button type="button" className="btn-close m-2" aria-label="Close" onClick={() => navigate(`${appPath}/software`)}></button>
                 */}
             </div>
 

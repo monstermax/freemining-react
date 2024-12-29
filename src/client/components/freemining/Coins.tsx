@@ -15,7 +15,7 @@ const Coins: React.FC = function (props: any) {
 
     const navigate = useNavigate();
 
-    const { rigHost, rigStatus } = context;
+    const { appPath, rigHost, rigStatus } = context;
 
     const [coinsWallets, setCoinsWallets] = useState<RigStatusConfigCoinsWallets>(rigStatus?.config.coinsWallets || {});
     const [coinsPools, setCoinsPools] = useState<{[coin: string]: RigStatusConfigCoinPools}>(rigStatus?.config.coinsPools || {});
@@ -32,7 +32,7 @@ const Coins: React.FC = function (props: any) {
         .filter(minerName => rigStatus?.status.managedMiners.includes(minerName));
 
     const changeTab = (tabName: string, selectedCoin?: string | null) => {
-        navigate(`/mining/software/${tabName}`, { state: { selectedCoin } });
+        navigate(`${appPath}/software/${tabName}`, { state: { selectedCoin } });
     }
 
     return (
@@ -54,17 +54,21 @@ const Coins: React.FC = function (props: any) {
                                 <img className='m-1' src={`http://${rigHost}/img/coins/${coin}.webp`} alt={coin} style={{ height: '24px' }} />
 
                                 <div className='m-1 cursor-default'>
-                                    <h2 className='h6 truncate'>{coin} {coinName ? ` - ${coinName}` : ""}</h2>
+                                    <h2 className='h6 bold mb-0'>{coin}</h2>
+
+                                    {coinName && (
+                                        <div className='text-muted truncate'>{coinName}</div>
+                                    )}
                                 </div>
 
                                 <div className='m-1 ms-auto'>
 
                                     <div className='btn-group'>
-                                        <button className={`btn ${walletsCount ? "btn-success" : "btn-warning"} btn-sm cursor-default`}>{walletsCount} wallets</button>
+                                        <button className={`btn ${walletsCount ? "btn-success" : "btn-warning"} btn-sm cursor-default text-nowrap`}>{walletsCount} wallets</button>
 
-                                        <button className={`btn ${poolsCount ? "btn-success" : "btn-warning"} btn-sm cursor-default`}>{poolsCount} pools</button>
+                                        <button className={`btn ${poolsCount ? "btn-success" : "btn-warning"} btn-sm cursor-default text-nowrap`}>{poolsCount} pools</button>
 
-                                        <button className={`btn ${minersCount ? "btn-success" : "btn-warning"} btn-sm cursor-default`}>{minersCount} miners</button>
+                                        <button className={`btn ${minersCount ? "btn-success" : "btn-warning"} btn-sm cursor-default text-nowrap`}>{minersCount} miners</button>
 
                                         <button className={`btn ${minersCount ? "btn-success" : "btn-warning"} btn-sm dropdown-toggle dropdown-toggle-split`} data-bs-toggle="dropdown" aria-expanded="false">
                                             <span className="visually-hidden">Toggle Dropdown</span>
@@ -96,7 +100,7 @@ const Coins: React.FC = function (props: any) {
                 )}
 
                 <div className='my-1 alert alert-info p-2'>
-                    <a className='btn btn-primary btn-sm m-1' onClick={() => navigate('/mining/software/run') }>Run miner...</a>
+                    <a className='btn btn-primary btn-sm m-1' onClick={() => navigate(`${appPath}/software/run`) }>Run miner...</a>
                 </div>
             </div>
         </>

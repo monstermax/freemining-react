@@ -3,9 +3,6 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import { GlobalContext, GlobalContextType } from '../../providers/global.provider';
 
-import { SoftwareTabRun } from './SoftwareRun';
-import { SoftwareTabInstall } from './SoftwareInstall';
-import { SoftwareTabInfos } from './SoftwareInfos';
 import { SoftwareModal } from './SoftwareModal';
 import { useNavigate } from 'react-router-dom';
 
@@ -20,7 +17,7 @@ const Software: React.FC<{}> = function (props) {
 
     const navigate = useNavigate();
 
-    const { rigStatus } = context;
+    const { appPath, rigStatus } = context;
 
     const [modalOpened, setModalOpened] = useState<boolean>(false);
     const [selectedCoin, setSelectedCoin] = useState<string | null>(null);
@@ -62,21 +59,34 @@ const Software: React.FC<{}> = function (props) {
         }
     }, [modalOpened])
 
-    const showInstallMiner = (context: GlobalContextType, minerName: string) => {
+    const showInstallMiner = (context: GlobalContextType, minerName: string, coin?: string) => {
         if (! context.rigHost) return;
         //console.log(`showInstallMiner ${minerName}`);
 
-        navigate('/mining/software/install');
+        closeSoftwarePopup();
+        navigate(`${appPath}/software/install`, { state: { selectedMinerName: minerName, selectedCoin: coin } });
     };
 
-    const showStartMiner = (context: GlobalContextType, minerName: string) => {
+    const showStartMiner = (context: GlobalContextType, minerName: string, coin?: string) => {
         if (! context.rigHost) return;
         //console.log(`showStartMiner ${minerName}`)
 
-        navigate('/mining/software/run');
+        closeSoftwarePopup();
+        navigate(`${appPath}/software/run`, { state: { selectedMinerName: minerName, selectedCoin: coin } });
     };
 
-    // TODO: changer les tab en routes
+
+    const runnableMinersNames: string[] = !rigStatus ? [] : rigStatus?.status.installableMiners
+        .filter(minerName => rigStatus?.status.runnableMiners.includes(minerName))
+        .filter(minerName => rigStatus?.status.managedMiners.includes(minerName));
+
+
+    const installablesMiners = (! rigStatus) ? [] : rigStatus.status.installableMiners
+        .filter(minerName => runnableMinersNames.includes(minerName));
+
+    const changeTab = (tabName: string, selectedMinerName?: string | null) => {
+        navigate(`${appPath}/software/${tabName}`, { state: { selectedMinerName } });
+    }
 
     return (
         <>
@@ -86,9 +96,90 @@ const Software: React.FC<{}> = function (props) {
                 {rigStatus && 
                     <>
                         <div className='m-2 mt-3'>
-                            <SoftwareTabInfos rigStatus={rigStatus} openSoftwarePopup={openSoftwarePopup} />
-                        </div>
+                            <div className='m-1'>
+                                <div>
+                                    {installablesMiners.map(minerName => {
+                                        return (
+                                            <div key={minerName} className='alert alert-info p-2 my-2'>
+                                                <div className='d-flex'>
+                                                    <h2 className='h4 cursor-default'>
+                                                        <span>{minerName}</span>
+                                                        <span className='m-1 pointer' onClick={() => openSoftwarePopup(minerName)}>ⓘ</span>
+                                                    </h2>
 
+                                                    <div className='ms-auto'>
+                                                        <div className='btn-group'>
+                                                            {rigStatus.status.runningMiners.includes(minerName) && (
+                                                                <>
+                                                                    <button type="button" className="btn btn-success btn-sm cursor-default">running</button>
+
+                                                                    <button type="button" className="btn btn-success btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                        <span className="visually-hidden">Toggle Dropdown</span>
+                                                                    </button>
+                                                                </>
+                                                            )}
+                                                            {!rigStatus.status.runningMiners.includes(minerName) && rigStatus.status.installedMiners.includes(minerName) && (
+                                                                <>
+                                                                    <button type="button" className="btn btn-info btn-sm cursor-default">installed</button>
+
+                                                                    <button type="button" className="btn btn-info btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                        <span className="visually-hidden">Toggle Dropdown</span>
+                                                                    </button>
+                                                                </>
+                                                            )}
+                                                            {!rigStatus.status.runningMiners.includes(minerName) && !rigStatus.status.installedMiners.includes(minerName) && (
+                                                                <>
+                                                                    <button type="button" className="btn btn-warning btn-sm cursor-default">installable</button>
+
+                                                                    <button type="button" className="btn btn-warning btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                                                        <span className="visually-hidden">Toggle Dropdown</span>
+                                                                    </button>
+                                                                </>
+                                                            )}
+
+                                                            <ul className="dropdown-menu">
+                                                                {rigStatus.status.installedMiners.includes(minerName) && (
+                                                                    <li>
+                                                                        <span className='dropdown-item pointer' onClick={() => changeTab('run', minerName)}>run...</span>
+                                                                    </li>
+                                                                )}
+
+                                                                {rigStatus.status.runningMiners.includes(minerName) && (
+                                                                    <li>
+                                                                        <span className='dropdown-item pointer' onClick={() => openSoftwarePopup(minerName)}>stop...</span>
+                                                                    </li>
+                                                                )}
+
+                                                                {(rigStatus.status.installedMiners.includes(minerName) || rigStatus.status.runningMiners.includes(minerName)) && (
+                                                                    <li>
+                                                                        <hr className="dropdown-divider" />
+                                                                    </li>
+                                                                )}
+
+                                                                <li>
+                                                                    <span className='dropdown-item pointer' onClick={() => changeTab('install', minerName)}>install...</span>
+                                                                </li>
+
+                                                                {rigStatus.status.installedMiners.includes(minerName) && (
+                                                                    <li>
+                                                                        <span className='dropdown-item pointer' onClick={() => openSoftwarePopup(minerName)}>uninstall...</span>
+                                                                    </li>
+                                                                )}
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                <div className='alert alert-info p-2'>
+                                    <a className='btn btn-primary btn-sm m-1' onClick={() => changeTab('run')}>Run miner...</a>
+                                    <a className='btn btn-primary btn-sm m-1' onClick={() => changeTab('install')}>Install miner...</a>
+                                </div>
+                            </div>
+                        </div>
 
                         {modalOpened && selectedMinerName && (
                             <>

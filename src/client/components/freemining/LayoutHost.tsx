@@ -1,6 +1,6 @@
 
 import React, { useContext, useEffect } from 'react';
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 
 import { GlobalContext } from '../../providers/global.provider';
 import { fetchJson } from '../../lib/utils.client';
@@ -11,7 +11,9 @@ const LayoutHost: React.FC = function (props) {
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Context GlobalProvider not found");
 
-    const { rigHost, setRigHost, rigStatus, setRigStatus, setRigStatusLoading, favoritesHosts, setFavoritesHosts } = context;
+    const navigate = useNavigate();
+
+    const { appPath, rigHost, setRigHost, rigStatus, setRigStatus, setRigStatusLoading, favoritesHosts, setFavoritesHosts } = context;
 
     const reloadHost = () => {
         setRigStatusLoading(true);
@@ -40,8 +42,8 @@ const LayoutHost: React.FC = function (props) {
     return (
         <>
 
-            <nav className='navbar navbar-expand-lg bg-secondary text-light mb-1 p-1 rounded'>
-                <h1 className='h2 cursor-default'>Riggle</h1>
+            <nav className='navbar navbar-expand-lg bg-dark text-light mb-1 p-1'>
+                <h1 className='h2 cursor-default' onClick={() => navigate(appPath)}>Riggle</h1>
 
                 <div className='ms-auto d-flex'>
                     {!rigStatus && (
@@ -54,10 +56,12 @@ const LayoutHost: React.FC = function (props) {
 
                     {rigStatus && (
                         <div>
-                            <div className="btn-group">
+                            <div className="input-group m-1">
                                 <button type="button" className="btn btn-success dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                     {rigHost}
                                 </button>
+
+                                <button type="button" className="btn btn-secondary" onClick={() => reloadHost()} title="Reload">↻</button>
 
                                 <ul className="dropdown-menu">
                                     {favoritesHosts.map(host => {
@@ -78,29 +82,30 @@ const LayoutHost: React.FC = function (props) {
                         </div>
                     )}
 
-                    <button type="button" className="btn btn-secondary m-1" onClick={() => reloadHost()} title="Reload">🗘</button>
                 </div>
             </nav>
 
 
-            <nav className='nav nav-tabs'>
+            <nav id="nav-menu" className='nav nav-tabs bold bg-secondary'>
+                {/*
                 <li className='nav-tem'>
-                    <Link to="/mining" className={`nav-link ${location.pathname === '/mining' ? "active" : ""}`}>Rig</Link>
+                    <Link to={`${appPath}`} className={`nav-link ${location.pathname === `/mining` ? "active" : ""}`}>Rig</Link>
+                </li>
+                */}
+                <li className='nav-tem'>
+                    <Link to={`${appPath}/hardware`} className={`nav-link ${location.pathname === `${appPath}/hardware` ? "active" : ""}`}>Hardware</Link>
                 </li>
                 <li className='nav-tem'>
-                    <Link to="/mining/hardware" className={`nav-link ${location.pathname === '/mining/hardware' ? "active" : ""}`}>Hardware</Link>
+                    <Link to={`${appPath}/software`} className={`nav-link ${location.pathname.startsWith(`${appPath}/software`) ? "active" : ""}`}>Software</Link>
                 </li>
                 <li className='nav-tem'>
-                    <Link to="/mining/software" className={`nav-link ${location.pathname.startsWith('/mining/software') ? "active" : ""}`}>Software</Link>
+                    <Link to={`${appPath}/mining`} className={`nav-link ${location.pathname === `${appPath}/mining` ? "active" : ""}`}>Mining</Link>
                 </li>
                 <li className='nav-tem'>
-                    <Link to="/mining/mining" className={`nav-link ${location.pathname === '/mining/mining' ? "active" : ""}`}>Mining</Link>
+                    <Link to={`${appPath}/coins`} className={`nav-link ${location.pathname === `${appPath}/coins` ? "active" : ""}`}>Coins</Link>
                 </li>
                 <li className='nav-tem'>
-                    <Link to="/mining/coins" className={`nav-link ${location.pathname === '/mining/coins' ? "active" : ""}`}>Coins</Link>
-                </li>
-                <li className='nav-tem'>
-                    <Link to="/mining/settings" className={`nav-link ${location.pathname === '/mining/settings' ? "active" : ""}`}>Settings</Link>
+                    <Link to={`${appPath}/settings`} className={`nav-link ${location.pathname === `${appPath}/settings` ? "active" : ""}`}>Settings</Link>
                 </li>
             </nav>
 
