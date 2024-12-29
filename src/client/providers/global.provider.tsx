@@ -3,7 +3,7 @@ import React, { createContext, useState, ReactNode, ProviderProps, useContext } 
 
 import { RigStatus } from '../types_client/freemining';
 import { showUninstallMiner, installMiner, uninstallMiner } from '../lib/software_install';
-import { showStopMiner, startMiner, stopMiner } from '../lib/software_start';
+import { showStopMiner, startMiner, stopMiner } from '../lib/software_run';
 
 
 const appPath = '/mining';
@@ -16,8 +16,8 @@ export interface GlobalContextType {
     rigHost: string | null;
     setRigHost: React.Dispatch<React.SetStateAction<string | null>>;
 
-    rigStatus: RigStatus | null;
-    setRigStatus: React.Dispatch<React.SetStateAction<RigStatus | null>>;
+    rigStatus: RigStatus | undefined | null;
+    setRigStatus: React.Dispatch<React.SetStateAction<RigStatus | undefined | null>>;
 
     rigStatusLoading: boolean;
     setRigStatusLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -47,7 +47,7 @@ export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
     const lastHost = localStorage.getItem('lastHost') || null;
 
     const [rigHost, setRigHost] = useState<string | null>(lastHost);
-    const [rigStatus, setRigStatus] = useState<RigStatus | null>(null);
+    const [rigStatus, setRigStatus] = useState<RigStatus | undefined | null>(undefined);
     const [rigStatusLoading, setRigStatusLoading] = useState<boolean>(false);
 
     const _favoritesHostsJson = window.localStorage.getItem('favoritesHosts') || null;

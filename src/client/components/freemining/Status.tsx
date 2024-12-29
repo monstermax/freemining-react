@@ -5,7 +5,7 @@ import { GlobalContext } from '../../providers/global.provider';
 
 
 
-const Status: React.FC = function (props: any) {
+export const Status: React.FC = function (props: any) {
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Context GlobalProvider not found");
 
@@ -20,8 +20,4 @@ const Status: React.FC = function (props: any) {
         </>
     );
 }
-
-
-
-export default Status;
 

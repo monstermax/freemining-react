@@ -4,11 +4,11 @@ import { useNavigate } from 'react-router-dom';
 
 import { GlobalContext } from '../../providers/global.provider';
 import { formatNumber } from '../../lib/utils.client';
-import { stopMiner } from '../../lib/software_start';
+import { stopMiner } from '../../lib/software_run';
 
 
 
-const Mining: React.FC = function (props: any) {
+export const Mining: React.FC = function (props: any) {
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Context GlobalProvider not found");
 
@@ -154,8 +154,4 @@ const Mining: React.FC = function (props: any) {
         </>
     );
 }
-
-
-
-export default Mining;
 

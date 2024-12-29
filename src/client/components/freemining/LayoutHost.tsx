@@ -1,30 +1,101 @@
 
 import React, { useContext, useEffect } from 'react';
-import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 
 import { GlobalContext } from '../../providers/global.provider';
-import { fetchJson } from '../../lib/utils.client';
-import { RigStatus } from '../../types_client/freemining';
+import { refreshRigStatus } from '../../lib/utils.client';
+
+import { SoftwareInstall } from "./SoftwareInstall";
+import { SoftwareRun } from "./SoftwareRun";
+import { Mining } from "./Mining";
+import { Settings } from "./Settings";
+import { Status } from "./Status";
+import { Coins } from "./Coins";
+import { Home } from "./Home"
+import { Software } from "./Software";
+import { Hardware } from "./Hardware";
+import { NoPage } from "./NoPage";
 
 
-const LayoutHost: React.FC = function (props) {
+
+export const LayoutHostRouter: React.FC = function () {
+    const context = useContext(GlobalContext);
+    if (!context) throw new Error("Context GlobalProvider not found");
+
+    const { rigHost, setRigHost, rigStatus, setRigStatus } = context;
+
+    useEffect(() => {
+        // rigHost changed => refresh rig status
+        setRigStatus(undefined);
+        refreshRigStatus(context);
+    }, [rigHost])
+
+
+    if (typeof rigStatus === 'undefined') {
+        // CONNECTING TO THE RIG...
+        return (
+            <div>
+                <div className="badge bg-warning m-1">
+                    <span className='m-1'>{rigHost}</span>
+                    <button type="button" className="btn-close m-1" aria-label="Close" onClick={() => setRigHost(null)}></button>
+                </div>
+                <div className="alert alert-info m-1">
+                    Connecting to the rig...
+                </div>
+            </div>
+        )
+    }
+
+    if (rigStatus === null) {
+        // RIG OFFLINE
+        return (
+            <div>
+                <div className="badge bg-danger m-1">
+                    <span className='m-1'>{rigHost}</span>
+                    <button type="button" className="btn-close m-1" aria-label="Close" onClick={() => setRigHost(null)}></button>
+                </div>
+                <div className="alert alert-danger m-1">
+                    Rig disconnected
+                </div>
+            </div>
+        )
+    }
+
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="mining" element={<LayoutHost />}>
+                    <Route index element={<Home />} />
+                    <Route path="hardware" element={<Hardware />} />
+                    <Route path="software" element={<Software />} />
+                    <Route path="software/install" element={<SoftwareInstall />} />
+                    <Route path="software/uninstall" element={<Software />} />
+                    <Route path="software/run" element={<SoftwareRun />} />
+                    <Route path="software/stop" element={<Software />} />
+                    <Route path="mining" element={<Mining />} />
+                    <Route path="coins" element={<Coins />} />
+                    <Route path="settings" element={<Settings />} />
+                    <Route path="status" element={<Status />} />
+                    <Route path="*" element={<NoPage />} />
+                </Route>
+            </Routes>
+        </BrowserRouter>
+    );
+}
+
+
+
+export const LayoutHost: React.FC = function (props) {
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Context GlobalProvider not found");
 
     const navigate = useNavigate();
 
-    const { appPath, rigHost, setRigHost, rigStatus, setRigStatus, setRigStatusLoading, favoritesHosts, setFavoritesHosts } = context;
+    const { appPath, rigHost, setRigHost, rigStatus, favoritesHosts, setFavoritesHosts } = context;
 
-    const reloadHost = () => {
-        setRigStatusLoading(true);
 
-        fetchJson<RigStatus>(`http://${rigHost}/rig/status.json`, { useProxy: true })
-            .then((newRigStatus) => {
-                setRigStatus(newRigStatus ? newRigStatus.data : null);
-            })
-            .finally(() => {
-                setRigStatusLoading(false);
-            })
+    const connectHost = (host: string) => {
+        setRigHost(host);
     }
 
     const disconnectHost = () => {
@@ -70,7 +141,7 @@ const LayoutHost: React.FC = function (props) {
                                     {rigHost}
                                 </button>
 
-                                <button type="button" className="btn btn-secondary" onClick={() => reloadHost()} title="Reload">↻</button>
+                                <button type="button" id="btn-rig-status-refresh" className="btn btn-secondary" onClick={() => refreshRigStatus(context)} title="Reload">↻</button>
 
                                 <ul className="dropdown-menu">
                                     {favoritesHosts.map(host => {
@@ -78,7 +149,7 @@ const LayoutHost: React.FC = function (props) {
 
                                         return (
                                             <li key={host}>
-                                                <a className="dropdown-item pointer" onClick={() => setRigHost(host)}>{host}</a>
+                                                <a className="dropdown-item pointer" onClick={() => connectHost(host)}>{host}</a>
                                             </li>
                                         );
                                     })}
@@ -124,7 +195,4 @@ const LayoutHost: React.FC = function (props) {
         </>
     )
 };
-
-
-export default LayoutHost;
 

@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 const bootstrap = window.bootstrap;
 
 
-const Software: React.FC<{}> = function (props) {
+export const Software: React.FC<{}> = function (props) {
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Context GlobalProvider not found");
 
@@ -193,9 +193,5 @@ const Software: React.FC<{}> = function (props) {
         </>
     );
 };
-
-
-
-export default Software;
 
 

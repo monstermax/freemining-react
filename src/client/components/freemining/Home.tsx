@@ -4,7 +4,7 @@ import React, { useContext } from 'react';
 import { GlobalContext } from '../../providers/global.provider';
 
 
-const Home: React.FC = function (props) {
+export const Home: React.FC = function (props) {
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Conext GlobalProvider not found");
 
@@ -54,5 +54,3 @@ const Home: React.FC = function (props) {
     );
 };
 
-
-export default Home;

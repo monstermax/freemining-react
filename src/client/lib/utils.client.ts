@@ -2,6 +2,11 @@
 
 import { useEffect, useState } from 'react';
 
+import { GlobalContextType } from '../providers/global.provider';
+
+import type { RigStatus } from '../types_client/freemining';
+import { getRigStatus } from './rig_api';
+
 
 type fetchDataOptions = {
     signal?: AbortSignal,
@@ -75,9 +80,6 @@ export async function fetchHtml(url: string, options?: fetchDataOptions): Promis
 
 export async function fetchJson<T>(url: string, options?: fetchDataOptions): Promise<FetchResponse<T> | null> {
     const signal = options?.signal;
-    let data: T | null = null;
-    let status = 0;
-    let headers: {[key: string]: string} = {};
 
     if (options?.useProxy) {
         url = `/api/corsproxy?url=${encodeURIComponent(url)}`;
@@ -95,7 +97,7 @@ export async function fetchJson<T>(url: string, options?: fetchDataOptions): Pro
 
             const status = response.status;
             const headers = Object.fromEntries(response.headers);
-            const data = await response.json();
+            const data: T = await response.json() as T;
 
             return { data, status, headers } as FetchResponse<T>;
         })
@@ -185,5 +187,29 @@ export function formatNumber(n: number, type?:null | 'seconds' | 'size'): string
     }
 
     return ret;
+}
+
+
+
+export const refreshRigStatus = (context: GlobalContextType): void => {
+    const { rigHost, setRigStatus } = context;
+
+    if (! rigHost) {
+        return;
+    }
+
+    document.getElementById('btn-rig-status-refresh')?.classList.add('disabled');
+
+    getRigStatus(rigHost)
+        .then((newRigStatus) => {
+            setRigStatus(newRigStatus ?? null);
+        })
+        .catch((err: any) => {
+            setRigStatus(null);
+        })
+        .finally(() => {
+            document.getElementById('btn-rig-status-refresh')?.classList.remove('disabled');
+        });
+
 }
 

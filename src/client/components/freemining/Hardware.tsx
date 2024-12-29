@@ -4,7 +4,7 @@ import React, { useContext } from 'react';
 import { GlobalContext } from '../../providers/global.provider';
 
 
-const Hardware: React.FC = function (props) {
+export const Hardware: React.FC = function (props) {
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Context GlobalProvider not found");
 
@@ -111,4 +111,3 @@ const Hardware: React.FC = function (props) {
     );
 };
 
-export default Hardware;

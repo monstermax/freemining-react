@@ -8,7 +8,7 @@ import type { RigStatusConfigCoinPools, RigStatusConfigCoinsWallets } from '../.
 
 
 
-const Coins: React.FC = function (props: any) {
+export const Coins: React.FC = function (props: any) {
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Context GlobalProvider not found");
 
@@ -106,7 +106,4 @@ const Coins: React.FC = function (props: any) {
     );
 
 }
-
-
-export default Coins;
 
