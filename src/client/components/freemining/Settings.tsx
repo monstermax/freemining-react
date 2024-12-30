@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import { GlobalContext } from '../../providers/global.provider';
 
-import type { RigStatusConfigCoinPools, RigStatusConfigCoinsWallets } from '../../types_client/freemining';
+import type { RigStatusConfigCoinPools, RigStatusConfigCoinWallets } from '../../types_client/freemining';
 
 
 
@@ -13,7 +13,7 @@ export const Settings: React.FC = function (props: any) {
 
     const { rigHost, rigStatus } = context;
 
-    const [coinsWallets, setCoinsWallets] = useState<RigStatusConfigCoinsWallets>(rigStatus?.config.coinsWallets || {});
+    const [coinsWallets, setCoinsWallets] = useState<{[coin: string]: RigStatusConfigCoinWallets}>(rigStatus?.config.coinsWallets || {});
     const [coinsPools, setCoinsPools] = useState<{[coin: string]: RigStatusConfigCoinPools}>(rigStatus?.config.coinsPools || {});
 
     const coinsWalletsCoins = Object.keys(coinsWallets);

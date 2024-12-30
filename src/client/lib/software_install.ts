@@ -1,5 +1,6 @@
 
 import { GlobalContextType } from "../providers/global.provider";
+import { installMiner, uninstallMiner } from "./rig_api";
 import { fetchHtml } from "./utils.client";
 
 
@@ -29,8 +30,7 @@ export const showUninstallMiner = (context: GlobalContextType, minerName: string
 
 
 
-export const installMiner = (context: GlobalContextType, minerName: string, minerAlias?: string, options?: InstallMinerOptions) => {
-    if (! context.rigHost) return;
+export const installMinerSafe = (rigHost: string, minerName: string, minerAlias?: string, options?: InstallMinerOptions) => {
     console.log(`installMiner ${minerName} / ${minerAlias}`);
 
     const onStart = (minerName: string, minerAlias?: string) => {};
@@ -65,17 +65,7 @@ export const installMiner = (context: GlobalContextType, minerName: string, mine
             onStart(minerName, minerAlias);
         }
 
-        const data: {[key: string]: any} = {
-            action: 'start',
-            miner: minerName,
-            alias: minerAlias,
-            version: minerVersion,
-            default: 1,
-        };
-
-        const url = `http://${context.rigHost}/rig/miners/${minerName}/install`;
-
-        fetchHtml(url, { useProxy: true, method: 'POST', body: JSON.stringify(data) })
+        installMiner(rigHost, minerName, minerAlias, options)
             .then(({data, headers, status}) => {
                 if (data && data.startsWith('OK:')) {
                     if (typeof onSuccess === 'function') {
@@ -114,8 +104,7 @@ export const installMiner = (context: GlobalContextType, minerName: string, mine
 };
 
 
-export const uninstallMiner = (context: GlobalContextType, minerName: string, minerAlias?: string, options?: UninstallMinerOptions) => {
-    if (! context.rigHost) return;
+export const uninstallMinerSafe = (rigHost: string, minerName: string, minerAlias?: string, options?: UninstallMinerOptions) => {
     console.log(`uninstallMiner ${minerName} / ${minerAlias}`);
 
     //const minerVersion = options?.minerVersion || '';
@@ -146,15 +135,7 @@ export const uninstallMiner = (context: GlobalContextType, minerName: string, mi
             onStart(minerName, minerAlias);
         }
 
-        const data: {[key: string]: any} = {
-            action: 'start',
-            miner: minerName,
-            alias: minerAlias,
-        };
-
-        const url = `http://${context.rigHost}/rig/miners/${minerName}/uninstall`;
-
-        fetchHtml(url, { useProxy: true, method: 'POST', body: JSON.stringify(data) })
+        uninstallMiner(rigHost, minerName, minerAlias)
             .then(({data, headers, status}) => {
                 if (data && data.startsWith('OK:')) {
                     if (typeof onSuccess === 'function') {

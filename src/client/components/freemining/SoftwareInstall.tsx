@@ -4,10 +4,11 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { GlobalContext } from '../../providers/global.provider';
 
-import { installMiner, InstallMinerOptions } from '../../lib/software_install';
+import { installMinerSafe, InstallMinerOptions } from '../../lib/software_install';
 import { fetchJson } from '../../lib/utils.client';
 
 import type { RigStatusConfigCoinMiner, RigStatusStatusInstalledMinerAlias } from '../../types_client/freemining';
+import { getMinerInstallableVersions } from '../../lib/rig_api';
 
 
 export const SoftwareInstall: React.FC<{}> = function (props) {
@@ -42,17 +43,19 @@ export const SoftwareInstall: React.FC<{}> = function (props) {
     const submitStartMiner = () => {
         if (! minerName || ! minerAlias) return;
         if (! minerVersion) return;
+        if (! rigHost) return;
 
         const options: InstallMinerOptions = {
             confirmed: true,
             minerVersion,
         };
 
-        installMiner(context, minerName, minerAlias, options);
+        installMinerSafe(rigHost, minerName, minerAlias, options);
 
         navigate(`${appPath}/software`);
     }
 
+    // rigHost and/or rigStatus CHANGED
     useEffect(() => {
         const _minersList: [string, RigStatusConfigCoinMiner][] = rigStatus ? runnableMinersNames.map(minerName => [minerName, rigStatus.config.miners[minerName]]) : [];
         setMinersList(_minersList);
@@ -71,16 +74,15 @@ export const SoftwareInstall: React.FC<{}> = function (props) {
     }, [rigHost, rigStatus]);
 
     useEffect(() => {
+        // rigHost and/or minerName CHANGED
         setMinerVersion(null);
         setMinerInstallableVersionsList([]);
         setMinersAliasesList([]);
 
-        if (minerName) {
-            const url = `http://${rigHost}/rig/config/miners/${minerName}/installable-versions`;
-
-            fetchJson<string[]>(url, { useProxy: true })
+        if (rigHost && minerName) {
+            getMinerInstallableVersions(rigHost, minerName)
                 .then((result) => {
-                    setMinerInstallableVersionsList(result?.data || []);
+                    setMinerInstallableVersionsList(result);
                 })
                 .catch((err: any) => {
                 })
@@ -106,6 +108,8 @@ export const SoftwareInstall: React.FC<{}> = function (props) {
     }, [rigHost, minerName, minerVersion])
 
     useEffect(() => {
+        // check if <button ...> must be enabled
+
         const variables: {[variableName: string]: string | null} = {
             minerName,
             minerAlias,

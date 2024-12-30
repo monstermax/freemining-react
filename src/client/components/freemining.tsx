@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { GlobalContext, GlobalProvider } from "../providers/global.provider";
 
 import { LayoutHostRouter } from "./freemining/LayoutHost";
-import { LayoutNoHost } from "./freemining/LayoutNoHost";
+import { NoHost } from "./freemining/NoHost";
 
 
 // MAIN APP
@@ -28,7 +28,7 @@ export const GlobalLayoutWrapper: React.FC = function () {
 
     // No rig connected
     if (! rigHost) {
-        return <LayoutNoHost />;
+        return <NoHost />;
     }
 
     // Connected to a rig

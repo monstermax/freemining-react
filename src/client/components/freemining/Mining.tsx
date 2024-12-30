@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { GlobalContext } from '../../providers/global.provider';
 import { formatNumber } from '../../lib/utils.client';
-import { stopMiner } from '../../lib/software_run';
+import { stopMinerSafe, StopMinerOptions } from '../../lib/software_run';
 
 
 
@@ -13,6 +13,13 @@ export const Mining: React.FC = function (props: any) {
     if (!context) throw new Error("Context GlobalProvider not found");
 
     const navigate = useNavigate();
+
+    const submitStopMiner = (minerName: string, minerAlias: string, options?: StopMinerOptions) => {
+        if (! rigHost) return;
+
+        stopMinerSafe(rigHost, minerName, minerAlias, options)
+    }
+
 
     const { appPath, rigHost, rigStatus } = context;
 
@@ -82,7 +89,7 @@ export const Mining: React.FC = function (props: any) {
                                             </ul>
 
                                             <div className='ms-auto'>
-                                                <button type="button" className="btn btn-danger btn-sm" onClick={() => stopMiner(context, minerName, minerAlias, { instanceName }) }>stop</button>
+                                                <button type="button" className="btn btn-danger btn-sm" onClick={() => submitStopMiner(minerName, minerAlias, { instanceName }) }>stop</button>
                                             </div>
                                         </div>
 

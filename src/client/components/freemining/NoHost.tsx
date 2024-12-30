@@ -8,7 +8,7 @@ import { GlobalContext } from '../../providers/global.provider';
 const rigHostPlaceholder = '127.0.0.1';
 
 
-export const LayoutNoHost: React.FC = function () {
+export const NoHost: React.FC = function () {
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Context GlobalProvider not found");
 

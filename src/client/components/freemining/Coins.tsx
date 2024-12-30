@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { GlobalContext } from '../../providers/global.provider';
 
-import type { RigStatusConfigCoinPools, RigStatusConfigCoinsWallets } from '../../types_client/freemining';
+import type { RigStatusConfigCoinPools, RigStatusConfigCoinWallets } from '../../types_client/freemining';
 
 
 
@@ -16,7 +16,7 @@ export const Coins: React.FC = function (props: any) {
 
     const { appPath, rigHost, rigStatus } = context;
 
-    const [coinsWallets, setCoinsWallets] = useState<RigStatusConfigCoinsWallets>(rigStatus?.config.coinsWallets || {});
+    const [coinsWallets, setCoinsWallets] = useState<{[coin: string]: RigStatusConfigCoinWallets}>(rigStatus?.config.coinsWallets || {});
     const [coinsPools, setCoinsPools] = useState<{[coin: string]: RigStatusConfigCoinPools}>(rigStatus?.config.coinsPools || {});
 
     const coins: string[] = Object.keys(rigStatus?.config.coins || {});

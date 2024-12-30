@@ -22,13 +22,30 @@ export const LayoutHostRouter: React.FC = function () {
     const context = useContext(GlobalContext);
     if (!context) throw new Error("Context GlobalProvider not found");
 
-    const { rigHost, setRigHost, rigStatus, setRigStatus } = context;
+    const { rigHost, setRigHost, rigStatus, setRigStatus, favoritesHosts, setFavoritesHosts } = context;
 
     useEffect(() => {
-        // rigHost changed => refresh rig status
+        // rigHost CHANGED => refresh rig status
         setRigStatus(undefined);
         refreshRigStatus(context);
-    }, [rigHost])
+
+    }, [rigHost]);
+
+    useEffect(() => {
+        // rigHost and/or rigStatus CHANGED => save lastHost
+
+        if (rigHost && rigStatus) {
+            // save lastHost
+            localStorage.setItem('lastHost', rigHost);
+
+            // add host to favorites
+            if (! favoritesHosts.includes(rigHost)) {
+                const _favoritesHosts = [... new Set([...favoritesHosts, rigHost])];
+                setFavoritesHosts(_favoritesHosts);
+                window.localStorage.setItem('favoritesHosts', JSON.stringify(_favoritesHosts));
+            }
+        }
+    }, [rigHost, rigStatus]);
 
 
     if (typeof rigStatus === 'undefined') {
@@ -90,8 +107,9 @@ export const LayoutHost: React.FC = function (props) {
     if (!context) throw new Error("Context GlobalProvider not found");
 
     const navigate = useNavigate();
+    const location = useLocation();
 
-    const { appPath, rigHost, setRigHost, rigStatus, favoritesHosts, setFavoritesHosts } = context;
+    const { appPath, rigHost, setRigHost, rigStatus, favoritesHosts } = context;
 
 
     const connectHost = (host: string) => {
@@ -103,21 +121,6 @@ export const LayoutHost: React.FC = function (props) {
         setRigHost(null);
     }
 
-    const location = useLocation();
-
-    useEffect(() => {
-        if (rigHost) {
-            localStorage.setItem('lastHost', rigHost);
-
-            if (! favoritesHosts.includes(rigHost)) {
-                setFavoritesHosts((hosts) => [... new Set([...hosts, rigHost])]);
-            }
-        }
-    }, [rigHost]);
-
-    useEffect(() => {
-        window.localStorage.setItem('favoritesHosts', JSON.stringify(favoritesHosts));
-    }, [favoritesHosts]);
 
     return (
         <>

@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import { GlobalContext } from '../../providers/global.provider';
-import { startMiner, StartMinerOptions } from '../../lib/software_run';
+import { startMinerSafe, StartMinerOptions } from '../../lib/software_run';
 
 import type { RigStatusConfigCoin, RigStatusConfigCoinMiner, RigStatusConfigCoinPool, RigStatusConfigCoinPools, RigStatusConfigCoinWallet, RigStatusConfigCoinWallets, RigStatusStatusInstalledMinerAlias } from '../../types_client/freemining';
 
@@ -168,6 +168,7 @@ export const SoftwareRun: React.FC<{}> = function (props) {
     }
 
     const submitStartMiner = () => {
+        if (! rigHost) return;
         if (! minerName || ! minerAlias) return;
         if (! coin || ! algo) return;
         if (! poolUrl || ! poolUser) return;
@@ -180,7 +181,7 @@ export const SoftwareRun: React.FC<{}> = function (props) {
             extraArgs: extraArgs ?? '',
         };
 
-        startMiner(context, minerName, minerAlias, options);
+        startMinerSafe(rigHost, minerName, minerAlias, options);
 
         navigate(`${appPath}/software`);
     }

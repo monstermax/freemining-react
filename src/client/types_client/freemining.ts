@@ -10,12 +10,12 @@ export type RigStatus = {
 
 export type RigStatusConfig = {
     coins:        {[coin: string]: RigStatusConfigCoin},
-    coinsWallets: RigStatusConfigCoinsWallets,
+    coinsWallets: {[coin: string]: RigStatusConfigCoinWallets},
     coinsPools:   {[coin: string]: RigStatusConfigCoinPools},
     coinsMiners:  {[coin: string]: RigStatusConfigCoinMiners},
+    miners: {[minerName: string]: { apiPort?: number, extraArgs?: string }},
 
     farmAgent: { host: string, pass: string, port: number },
-    miners: {[minerName: string]: { apiPort?: number, extraArgs?: string }},
     name: string,
     showNotManagedRigs: boolean,
     dataDate: number,
@@ -24,7 +24,6 @@ export type RigStatusConfig = {
 
 export type RigStatusConfigCoin = { algo: string, coinName: string, explorer?: string };
 
-export type RigStatusConfigCoinsWallets = {[coin: string]: RigStatusConfigCoinWallets};
 export type RigStatusConfigCoinWallets  = {[walletName: string]: RigStatusConfigCoinWallet};
 export type RigStatusConfigCoinWallet   = string;
 

@@ -1,5 +1,6 @@
 
 import { GlobalContextType } from "../providers/global.provider";
+import { startMiner, stopMiner } from "./rig_api";
 import { fetchHtml } from "./utils.client";
 
 
@@ -22,18 +23,8 @@ export type StopMinerOptions = {
 const alertify = window.alertify;
 
 
-export const showStopMiner = (context: GlobalContextType, minerName: string) => {
-    if (! context.rigHost) return;
-    console.log(`showStopMiner ${minerName}`)
 
-    // TODO ?
-    //const minerAlias = `${minerName}-test-todo`; // TODO: proposer tous les alias lancés pour ce miner
-    //stopMiner(context, minerName, minerAlias, {});
-};
-
-
-export const startMiner = (context: GlobalContextType, minerName: string, minerAlias: string, options: StartMinerOptions) => {
-    if (! context.rigHost) return;
+export const startMinerSafe = async (rigHost: string, minerName: string, minerAlias: string, options: StartMinerOptions) => {
     console.log(`startMiner ${minerAlias}`)
 
     const onStart = (minerName: string, minerAlias: string) => {};
@@ -65,28 +56,11 @@ export const startMiner = (context: GlobalContextType, minerName: string, minerA
         return;
     }
 
-    //const minerFullName = `${minerName}-${minerAlias}`;
-    //const minerFullTitle = (minerName === minerAlias || ! minerAlias) ? minerName : `${minerName} (${minerAlias}))`;
-
-    const data: {[key: string]: any} = {
-        action: 'start',
-        miner: minerName,
-        minerAlias,
-        coin,
-        algo,
-        poolUrl,
-        poolUser,
-        extraArgs,
-    };
-
-    const url = `http://${context.rigHost}/rig/miners/${minerName}/run`;
-
     if (typeof onStart === 'function') {
         onStart(minerName, minerAlias);
     }
 
-
-    fetchHtml(url, { useProxy: true, method: 'POST', body: JSON.stringify(data) })
+    startMiner(rigHost, minerName, minerAlias, options)
         .then(({data, headers, status}) => {
             if (data && data.startsWith('OK:')) {
                 if (typeof onSuccess === 'function') {
@@ -114,8 +88,7 @@ export const startMiner = (context: GlobalContextType, minerName: string, minerA
 };
 
 
-export const stopMiner = (context: GlobalContextType, minerName: string, minerAlias: string, options?: StopMinerOptions) => {
-    if (! context.rigHost) return;
+export const stopMinerSafe = (rigHost: string, minerName: string, minerAlias: string, options?: StopMinerOptions) => {
     console.log(`stopMiner ${minerAlias}`)
 
     const onStart = (minerName: string, minerAlias: string) => {};
@@ -156,9 +129,7 @@ export const stopMiner = (context: GlobalContextType, minerName: string, minerAl
             instanceName,
         };
 
-        const url = `http://${context.rigHost}/rig/miners/${minerName}/run`;
-
-        fetchHtml(url, { useProxy: true, method: 'POST', body: JSON.stringify(data) })
+        stopMiner(rigHost, minerName, minerAlias, options)
             .then(({data, headers, status}) => {
                 if (data && data.startsWith('OK:')) {
                     if (typeof onSuccess === 'function') {

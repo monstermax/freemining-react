@@ -59,18 +59,12 @@ export const Software: React.FC<{}> = function (props) {
         }
     }, [modalOpened])
 
-    const showInstallMiner = (context: GlobalContextType, minerName: string, coin?: string) => {
-        if (! context.rigHost) return;
-        //console.log(`showInstallMiner ${minerName}`);
-
+    const showInstallMiner = (minerName: string, coin?: string) => {
         closeSoftwarePopup();
         navigate(`${appPath}/software/install`, { state: { selectedMinerName: minerName, selectedCoin: coin } });
     };
 
-    const showStartMiner = (context: GlobalContextType, minerName: string, coin?: string) => {
-        if (! context.rigHost) return;
-        //console.log(`showStartMiner ${minerName}`)
-
+    const showStartMiner = (minerName: string, coin?: string) => {
         closeSoftwarePopup();
         navigate(`${appPath}/software/run`, { state: { selectedMinerName: minerName, selectedCoin: coin } });
     };
