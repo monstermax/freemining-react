@@ -44,7 +44,7 @@ export const Mining: React.FC = function (props: any) {
                                 const minerInstanceStats = rigStatus?.status.minersStats[instanceName];
                                 const coin = instanceDetails.params.coin;
                                 const minerAlias = instanceDetails.alias;
-                                const coinDetails = rigStatus?.config.coins[coin];
+                                const coinConfig = rigStatus?.config.coins[coin];
 
                                 return (
                                     <div key={instanceName} className='alert alert-info mb-3'>
@@ -53,7 +53,7 @@ export const Mining: React.FC = function (props: any) {
                                                 <h2 className='h4 truncate mb-1'>
                                                     <img src={`http://${rigHost}/img/coins/${coin}.webp`} alt={coin} style={{ height: '32px' }} />
 
-                                                    <span className='m-2 cursor-default'>{coinDetails?.coinName || coin}</span>
+                                                    <span className='m-2 cursor-default'>{coinConfig?.coinName || coin}</span>
                                                 </h2>
                                             </div>
                                             <div className='ms-auto'>

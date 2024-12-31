@@ -5,7 +5,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { GlobalContext } from '../../providers/global.provider';
 
 import { installMinerSafe, InstallMinerOptions } from '../../lib/software_install';
-import { fetchJson } from '../../lib/utils.client';
 
 import type { RigStatusConfigCoinMiner, RigStatusStatusInstalledMinerAlias } from '../../types_client/freemining';
 import { getMinerInstallableVersions } from '../../lib/rig_api';

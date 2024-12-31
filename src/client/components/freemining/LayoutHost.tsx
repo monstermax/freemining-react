@@ -15,6 +15,11 @@ import { Home } from "./Home"
 import { Software } from "./Software";
 import { Hardware } from "./Hardware";
 import { NoPage } from "./NoPage";
+import { SettingsCoins } from './SettingsCoins';
+import { SettingsCoinsWallets } from './SettingsCoinsWallets';
+import { SettingsCoinsPools } from './SettingsCoinsPools';
+import { SettingsCoinsMiners } from './SettingsCoinsMiners';
+import { SettingsMiners } from './SettingsMiners';
 
 
 
@@ -92,6 +97,11 @@ export const LayoutHostRouter: React.FC = function () {
                     <Route path="mining" element={<Mining />} />
                     <Route path="coins" element={<Coins />} />
                     <Route path="settings" element={<Settings />} />
+                    <Route path="settings/coins" element={<SettingsCoins />} />
+                    <Route path="settings/coins-wallets" element={<SettingsCoinsWallets />} />
+                    <Route path="settings/coins-pools" element={<SettingsCoinsPools />} />
+                    <Route path="settings/coins-miners" element={<SettingsCoinsMiners />} />
+                    <Route path="settings/miners" element={<SettingsMiners />} />
                     <Route path="status" element={<Status />} />
                     <Route path="*" element={<NoPage />} />
                 </Route>
@@ -144,7 +154,9 @@ export const LayoutHost: React.FC = function (props) {
                                     {rigHost}
                                 </button>
 
-                                <button type="button" id="btn-rig-status-refresh" className="btn btn-secondary" onClick={() => refreshRigStatus(context)} title="Reload">↻</button>
+                                <button type="button" id="btn-rig-status-refresh" className="btn btn-secondary" onClick={() => refreshRigStatus(context)} title="Reload">
+                                    <i className="bi bi-arrow-clockwise"></i>
+                                </button>
 
                                 <ul className="dropdown-menu">
                                     {favoritesHosts.map(host => {
@@ -188,7 +200,7 @@ export const LayoutHost: React.FC = function (props) {
                     <Link to={`${appPath}/coins`} className={`nav-link ${location.pathname === `${appPath}/coins` ? "active" : ""}`}>Coins</Link>
                 </li>
                 <li className='nav-tem'>
-                    <Link to={`${appPath}/settings`} className={`nav-link ${location.pathname === `${appPath}/settings` ? "active" : ""}`}>Settings</Link>
+                    <Link to={`${appPath}/settings`} className={`nav-link ${location.pathname.startsWith(`${appPath}/settings`) ? "active" : ""}`}>Settings</Link>
                 </li>
             </nav>
 
