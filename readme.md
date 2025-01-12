@@ -27,4 +27,12 @@ npm run prod
 ```
 
 
+## Screenshots
+
+![data/infos/freemining_01.png](preview 01)
+![data/infos/freemining_02.png](preview 02)
+![data/infos/freemining_03.png](preview 03)
+![data/infos/freemining_04.png](preview 04)
+![data/infos/freemining_05.png](preview 05)
+
 
