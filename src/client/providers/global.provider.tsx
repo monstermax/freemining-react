@@ -1,7 +1,7 @@
 
 import React, { createContext, useState, ReactNode } from 'react';
 
-import type { RigStatus } from '../types_client/freemining';
+import type { RigStatus } from '../types_client/freemining_types.client';
 
 
 const appPath = '/mining';

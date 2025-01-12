@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { GlobalContext } from '../../providers/global.provider';
 import { startMinerSafe, StartMinerOptions } from '../../lib/software_run';
 
-import type { RigStatusConfigCoin, RigStatusConfigCoinMiner, RigStatusConfigCoinPool, RigStatusConfigCoinPools, RigStatusConfigCoinWallet, RigStatusConfigCoinWallets, RigStatusStatusInstalledMinerAlias } from '../../types_client/freemining';
+import type { RigStatusConfigCoin, RigStatusConfigCoinMiner, RigStatusConfigCoinPool, RigStatusConfigCoinPools, RigStatusConfigCoinWallet, RigStatusConfigCoinWallets, RigStatusStatusInstalledMinerAlias } from '../../types_client/freemining_types.client';
 
 
 export const SoftwareRun: React.FC<{}> = function (props) {
@@ -55,6 +55,7 @@ export const SoftwareRun: React.FC<{}> = function (props) {
     const [algo, setAlgo] = useState<string | null>(null)
     const [extraArgs, setExtraArgs] = useState<string | null>(null)
     const [worker, setWorker] = useState<string | null>(rigStatus?.rig.name ?? null);
+    const [dockerize, setDockerize] = useState<boolean>(false);
     const [startEnabled, setStartEnabled] = useState<boolean>(false);
 
     const $poolRef = useRef<HTMLSelectElement>(null);
@@ -179,6 +180,7 @@ export const SoftwareRun: React.FC<{}> = function (props) {
             poolUrl,
             poolUser,
             extraArgs: extraArgs ?? '',
+            dockerize,
         };
 
         startMinerSafe(rigHost, minerName, minerAlias, options);
@@ -423,13 +425,26 @@ export const SoftwareRun: React.FC<{}> = function (props) {
                             </label>
                         </div>
 
-                        {/* MINER - WORKER */}
                         <div className='m-1'>
-                            <label className='w-100'>
-                                <span>Worker</span>
+                            <div className='d-flex'>
+                                {/* MINER - WORKER */}
+                                <div className='m-1 flex-grow-1'>
+                                    <label className='w-100'>
+                                        <span>Worker</span>
 
-                                <input type="text" name="" value={worker ?? ''} className='form-control' onChange={(event) => setWorker(event.target.value || null) } />
-                            </label>
+                                        <input type="text" name="" value={worker ?? ''} className='form-control' onChange={(event) => setWorker(event.target.value || null) } />
+                                    </label>
+                                </div>
+
+                                {/* MINER - DOCKER */}
+                                <div className='m-1'>
+                                    <label className='form-check-label'>
+                                        <span>Docker</span>
+                                        <br />
+                                        <input type="checkbox" name="" value={1} className='form-check-input' checked={dockerize} onChange={(event) => setDockerize(event.target.checked) } />
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

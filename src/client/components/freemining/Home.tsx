@@ -2,6 +2,7 @@
 import React, { useContext } from 'react';
 
 import { GlobalContext } from '../../providers/global.provider';
+import { formatNumber } from '../../lib/utils.client';
 
 
 export const Home: React.FC = function (props) {
@@ -35,6 +36,10 @@ export const Home: React.FC = function (props) {
                     <li className='list-group-item truncate cursor-default'>
                         <span className='bold me-2'>OS:</span>
                         <span>{rigStatus?.rig.os}</span>
+                    </li>
+                    <li className='list-group-item truncate cursor-default'>
+                        <span className='bold me-2'>Uptime:</span>
+                        <span>{rigStatus ? formatNumber(rigStatus.usage.uptime, 'seconds') : '-'}</span>
                     </li>
                     <li className='list-group-item truncate cursor-default'>
                         <span className='bold me-2'>Status:</span>

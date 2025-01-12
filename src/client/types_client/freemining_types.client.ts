@@ -1,4 +1,16 @@
 
+export type RigConfigType = 'coins' | 'miners' | 'coins_wallets' | 'coins_pools' | 'coins_miners';
+
+export type RigConfigs<T extends RigConfigType> = 
+    T extends 'coins'         ? {[coin: string]: RigStatusConfigCoin} :
+    T extends 'coins_wallets' ? {[coin: string]: RigStatusConfigCoinWallets} :
+    T extends 'coins_miners'  ? {[coin: string]: RigStatusConfigCoinMiners} :
+    T extends 'coins_pools'   ? {[coin: string]: RigStatusConfigCoinPools} :
+    T extends 'miners'        ? {[minerName: string]: RigStatusConfigMiner} :
+    never;
+
+
+
 export type RigStatus = {
     config: RigStatusConfig,
     dataDate: number,
@@ -8,12 +20,14 @@ export type RigStatus = {
     usage: RigStatusUsage,
 };
 
+
+
 export type RigStatusConfig = {
-    coins:        {[coin: string]: RigStatusConfigCoin},
-    coinsWallets: {[coin: string]: RigStatusConfigCoinWallets},
-    coinsPools:   {[coin: string]: RigStatusConfigCoinPools},
-    coinsMiners:  {[coin: string]: RigStatusConfigCoinMiners},
-    miners:       {[minerName: string]: { /* apiPort?: number, */ extraArgs?: string, sampleArgs?: string }},
+    coins:        {[coin: string]     : RigStatusConfigCoin},
+    coinsWallets: {[coin: string]     : RigStatusConfigCoinWallets},
+    coinsPools:   {[coin: string]     : RigStatusConfigCoinPools},
+    coinsMiners:  {[coin: string]     : RigStatusConfigCoinMiners},
+    miners:       {[minerName: string]: RigStatusConfigMiner},
 
     farmAgent: { host: string, pass: string, port: number },
     name: string,
@@ -23,6 +37,7 @@ export type RigStatusConfig = {
 
 
 export type RigStatusConfigCoin = { algo: string, coinName: string, website?: string, explorer?: string };
+export type RigStatusConfigMiner = { extraArgs?: string };
 
 export type RigStatusConfigCoinWallets  = {[walletName: string]: RigStatusConfigCoinWallet};
 export type RigStatusConfigCoinWallet   = string;
@@ -189,6 +204,7 @@ export type RigStatusSystemInfos = {
         platform: string,
     },
 };
+
 
 export type RigStatusUsage = {
     cpuLoad: number,

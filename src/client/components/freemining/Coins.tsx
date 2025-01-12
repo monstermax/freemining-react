@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { GlobalContext } from '../../providers/global.provider';
 
-import type { RigStatusConfigCoinPools, RigStatusConfigCoinWallets } from '../../types_client/freemining';
+import type { RigStatusConfigCoinPools, RigStatusConfigCoinWallets } from '../../types_client/freemining_types.client';
 
 
 

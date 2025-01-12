@@ -10,6 +10,7 @@ export type StartMinerOptions = {
     poolUrl: string,
     poolUser: string,
     extraArgs: string,
+    dockerize: boolean,
 };
 
 export type StopMinerOptions = {

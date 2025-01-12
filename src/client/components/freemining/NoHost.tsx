@@ -35,7 +35,7 @@ export const NoHost: React.FC = function () {
         <div>
 
             <nav className='navbar navbar-expand-lg bg-dark text-light mb-1 p-1'>
-                <h1 className='h2 cursor-default'>Riggle</h1>
+                <h1 className='h2 cursor-default'>Freemining</h1>
 
                 <div className="ms-auto">
                     <div className={`badge bg-danger m-1 cursor-default`}>

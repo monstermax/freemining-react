@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import { GlobalContext } from '../../providers/global.provider';
 
-import type { RigStatusConfigCoinMiners, RigStatusConfigCoinPools, RigStatusConfigCoinWallets } from '../../types_client/freemining';
+import type { RigStatusConfigCoinMiners, RigStatusConfigCoinPools, RigStatusConfigCoinWallets } from '../../types_client/freemining_types.client';
 import { Link } from 'react-router-dom';
 
 

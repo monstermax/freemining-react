@@ -6,7 +6,7 @@ import { GlobalContext } from '../../providers/global.provider';
 
 import { installMinerSafe, InstallMinerOptions } from '../../lib/software_install';
 
-import type { RigStatusConfigCoinMiner, RigStatusStatusInstalledMinerAlias } from '../../types_client/freemining';
+import type { RigStatusConfigCoinMiner, RigStatusStatusInstalledMinerAlias } from '../../types_client/freemining_types.client';
 import { getMinerInstallableVersions } from '../../lib/rig_api';
 
 

@@ -2,7 +2,9 @@
 import React, { useContext, useState } from 'react';
 
 import { GlobalContext } from '../../providers/global.provider';
-import { RigStatusConfigCoinMiners } from '../../types_client/freemining';
+import { RigStatusConfigCoinMiners } from '../../types_client/freemining_types.client';
+import { updateRigConfig } from '../../lib/rig_api';
+import { downloadFile, refreshRigStatus, uploadFile } from '../../lib/utils.client';
 
 
 
@@ -11,8 +13,23 @@ export const SettingsCoinsMiners: React.FC = function (props: any) {
     if (!context) throw new Error("Context GlobalProvider not found");
 
     const { rigHost, rigStatus } = context;
+    if (! rigHost || ! rigHost) return <div>No host</div>
 
     const [coinsMiners, setCoinsMiners] = useState<{[coin: string]: RigStatusConfigCoinMiners}>(rigStatus?.config.coinsMiners ?? {});
+
+    const downloadConfigFile = () => {
+        const fileName = `freemining_config_coins_miners.${rigStatus?.rig.name}.json`;
+        return downloadFile(coinsMiners, fileName, "application/json");
+    }
+
+    const uploadConfigFile = () => {
+        return uploadFile(context)
+            .then((content) => {
+                return JSON.parse(content ?? '{}')
+            })
+            .then((config: {[coin: string]: RigStatusConfigCoinMiners}) => updateRigConfig(rigHost, 'coins_miners', config))
+            .then(() => refreshRigStatus(context))
+    }
 
 
     return (
@@ -34,11 +51,13 @@ export const SettingsCoinsMiners: React.FC = function (props: any) {
                                     <span className='m-2'>{coin}</span>
                                 </h3>
 
-                                <div className='badge bg-info ms-auto me-2'>
-                                    {Object.keys(coinMinersConfig).length} miners
+                                <div className="d-flex align-items-center ms-auto me-2">
+                                    <div className='badge bg-info'>
+                                        {Object.keys(coinMinersConfig).length} miners
+                                    </div>
                                 </div>
 
-                                <div className='ms-2'>
+                                <div className='d-flex align-items-center ms-2'>
                                     <i className={`bi text-secondary ${showCoinDetails ? "bi-chevron-double-up" : "bi-chevron-double-down"}`}></i>
                                 </div>
                             </div>
@@ -49,7 +68,31 @@ export const SettingsCoinsMiners: React.FC = function (props: any) {
 
                                     const [showMinerDetails, setShowMinerDetails] = useState(false);
 
-                                    const minerConfig = rigStatus?.config.miners[minerName] || null;
+                                    const changeMinerAlgo = (newAlgo: string) => {
+                                        if (coinMinerConfig.algo === newAlgo) {
+                                            return;
+                                        }
+
+                                        coinMinerConfig.algo = newAlgo;
+
+                                        updateRigConfig(rigHost, 'coins_miners', coinsMiners)
+                                            .then((result) => {
+                                                refreshRigStatus(context);
+                                            })
+                                    }
+
+                                    const changeMinerExtraArgs = (newExtraArgs: string) => {
+                                        if (coinMinerConfig.extraArgs === newExtraArgs) {
+                                            return;
+                                        }
+
+                                        coinMinerConfig.extraArgs = newExtraArgs;
+
+                                        updateRigConfig(rigHost, 'coins_miners', coinsMiners)
+                                            .then((result) => {
+                                                refreshRigStatus(context);
+                                            })
+                                    }
 
                                     return (
                                         <div key={minerName}>
@@ -63,14 +106,32 @@ export const SettingsCoinsMiners: React.FC = function (props: any) {
                                                 </div>
 
                                                 <table className={`table mt-1 ${showMinerDetails ? "" : "d-none"}`}>
-                                                    <tr>
-                                                        <td className='bold cursor-default'>Algo</td>
-                                                        <td><input type="text" className='form-control' defaultValue={coinMinerConfig.algo} /></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td className='bold cursor-default'>Optional arguments</td>
-                                                        <td><input type="text" className='form-control' defaultValue={coinMinerConfig.extraArgs} placeholder={minerConfig?.sampleArgs || ''} /></td>
-                                                    </tr>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td className='bold cursor-default'>Algo</td>
+                                                            <td>
+                                                                <input
+                                                                    type="text"
+                                                                    className='form-control'
+                                                                    defaultValue={coinMinerConfig.algo}
+                                                                    onBlur={(event) => changeMinerAlgo(event.currentTarget.value)}
+                                                                    onKeyDown={(event) => { if (event.key === 'Enter') { changeMinerAlgo(event.currentTarget.value); } }}
+                                                                    />
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td className='bold cursor-default'>Optional arguments</td>
+                                                            <td>
+                                                                <input
+                                                                    type="text"
+                                                                    className='form-control'
+                                                                    defaultValue={coinMinerConfig.extraArgs}
+                                                                    onBlur={(event) => changeMinerExtraArgs(event.currentTarget.value)}
+                                                                    onKeyDown={(event) => { if (event.key === 'Enter') { changeMinerExtraArgs(event.currentTarget.value); } }}
+                                                                    />
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
                                                 </table>
                                             </div>
                                         </div>
@@ -80,6 +141,12 @@ export const SettingsCoinsMiners: React.FC = function (props: any) {
                         </div>
                     );
                 })}
+            </div>
+
+            <div className='mt-2'>
+                <button className='btn btn-primary m-1' onClick={() => uploadConfigFile()}>Load coins-miners config</button>
+
+                <button className='btn btn-primary m-1' onClick={() => downloadConfigFile()}>Save coins-miners config</button>
             </div>
         </div>
     );

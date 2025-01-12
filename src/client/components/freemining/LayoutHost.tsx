@@ -136,7 +136,7 @@ export const LayoutHost: React.FC = function (props) {
         <>
 
             <nav className='navbar navbar-expand-lg bg-dark text-light mb-1 p-1'>
-                <h1 className='h2 pointer' onClick={() => navigate(appPath)}>Riggle</h1>
+                <h1 className='h2 pointer' onClick={() => navigate(appPath)}>Freemining</h1>
 
                 <div className='ms-auto d-flex'>
                     {!rigStatus && (

@@ -1,14 +1,16 @@
 
-import type { RigStatus, RigStatusConfigCoin, RigStatusConfigCoinMiners, RigStatusConfigCoinPools, RigStatusConfigCoinWallets } from '../types_client/freemining';
 import { InstallMinerOptions, UninstallMinerOptions } from './software_install';
 import { StartMinerOptions, StopMinerOptions } from './software_run';
 import { fetchHtml, fetchJson } from './utils.client';
 
-type ConfigType = 'coins' | 'miners' | 'coins_wallets' | 'coins_pools' | 'coins_miners';
+import type { RigConfigs, RigConfigType, RigStatus } from '../types_client/freemining_types.client';
+
+
+const useProxy = false;
 
 
 export const getRigStatus = async (rigHost: string): Promise<RigStatus | null> => {
-    return fetchJson<RigStatus>(`http://${rigHost}/rig/status.json`, { useProxy: true })
+    return fetchJson<RigStatus>(`http://${rigHost}/rig/status.json`, { useProxy })
         .then((newRigStatus) => {
             return newRigStatus ? newRigStatus.data : null;
         })
@@ -19,7 +21,7 @@ export const getRigStatus = async (rigHost: string): Promise<RigStatus | null> =
 
 
 export const getMinerInstallableVersions = async (rigHost: string, minerName: string): Promise<string[]> => {
-    return fetchJson<string[]>(`http://${rigHost}/rig/config/miners/${minerName}/installable-versions`, { useProxy: true })
+    return fetchJson<string[]>(`http://${rigHost}/rig/config/miners/${minerName}/installable-versions`, { useProxy })
         .then((result) => {
             return result ? result.data : [];
         })
@@ -31,7 +33,7 @@ export const getMinerInstallableVersions = async (rigHost: string, minerName: st
 
 
 export const startMiner = (rigHost: string, minerName: string, minerAlias: string, options: StartMinerOptions) => {
-    const {coin, algo, poolUrl, poolUser, extraArgs} = options;
+    const {coin, algo, poolUrl, poolUser, extraArgs, dockerize} = options;
 
     const data: {[key: string]: any} = {
         action: 'start',
@@ -42,11 +44,12 @@ export const startMiner = (rigHost: string, minerName: string, minerAlias: strin
         poolUrl,
         poolUser,
         extraArgs,
+        dockerize,
     };
 
     const url = `http://${rigHost}/rig/miners/${minerName}/run`;
 
-    return fetchHtml(url, { useProxy: true, method: 'POST', body: JSON.stringify(data) });
+    return fetchHtml(url, { useProxy, method: 'POST', body: JSON.stringify(data) });
 }
 
 
@@ -62,7 +65,7 @@ export const stopMiner = (rigHost: string, minerName: string, minerAlias: string
 
     const url = `http://${rigHost}/rig/miners/${minerName}/run`;
 
-    return fetchHtml(url, { useProxy: true, method: 'POST', body: JSON.stringify(data) });
+    return fetchHtml(url, { useProxy, method: 'POST', body: JSON.stringify(data) });
 }
 
 
@@ -79,7 +82,7 @@ export const installMiner = (rigHost: string, minerName: string, minerAlias?: st
 
     const url = `http://${rigHost}/rig/miners/${minerName}/install`;
 
-    return fetchHtml(url, { useProxy: true, method: 'POST', body: JSON.stringify(data) })
+    return fetchHtml(url, { useProxy, method: 'POST', body: JSON.stringify(data) })
 }
 
 
@@ -92,27 +95,18 @@ export const uninstallMiner = (rigHost: string, minerName: string, minerAlias?: 
 
     const url = `http://${rigHost}/rig/miners/${minerName}/uninstall`;
 
-    return fetchHtml(url, { useProxy: true, method: 'POST', body: JSON.stringify(data) });
+    return fetchHtml(url, { useProxy, method: 'POST', body: JSON.stringify(data) });
 }
 
 
-export const updateRigConfig = <T extends ConfigType>(rigHost: string, configType: T, config: RigConfigs<T>) => {
+export const updateRigConfig = <T extends RigConfigType>(rigHost: string, configType: T, config: RigConfigs<T>) => {
     const data: {[key: string]: any} = {
         action: 'update',
-        config,
+        config: JSON.stringify(config),
     };
 
     const url = `http://${rigHost}/rig/config/${configType}/update`;
 
-    return fetchHtml(url, { useProxy: true, method: 'POST', body: JSON.stringify(data) });
+    return fetchHtml(url, { useProxy, method: 'POST', body: JSON.stringify(data) });
 }
-
-
-type RigConfigs<T extends ConfigType> = 
-    T extends 'coins'        ? {[coin: string]: RigStatusConfigCoin} :
-    T extends 'coins_wallets' ? {[coin: string]: RigStatusConfigCoinWallets} :
-    T extends 'coins_miners'  ? {[coin: string]: RigStatusConfigCoinMiners} :
-    T extends 'coins_pools'   ? {[coin: string]: RigStatusConfigCoinPools} :
-    T extends 'miners'       ? {[minerName: string]: { extraArgs?: string }} :
-    never;
 

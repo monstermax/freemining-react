@@ -15,8 +15,8 @@ export const BasicReactComponent = (props: any) => {
 
 
 export const ExampleReactComponent = (props: any) => {
-    const fetchResponse = useFetchJson('/example/api/date');
-    const [val, setVal] = useState(fetchResponse?.data || 'loading (10%)...');
+    const fetchResult = useFetchJson('/example/api/date');
+    const [val, setVal] = useState(fetchResult || 'loading (10%)...');
 
     // toggle button text
     const btnClick = () => setVal(val === 'ying' ? 'yang' : 'ying');
@@ -24,12 +24,12 @@ export const ExampleReactComponent = (props: any) => {
     const btnTwoClick = () => {
         // reload api data
         fetchJson('/example/api/date')
-            .then(result => setVal(result.data));
+            .then(fetchResponse => setVal(fetchResponse?.data ?? ''));
     }
 
     useEffect(() => {
-        setVal(fetchResponse?.data || 'loading (80%)');
-    }, [fetchResponse?.data]);
+        setVal(fetchResult || 'loading (80%)');
+    }, [fetchResult]);
 
     return (
         <>

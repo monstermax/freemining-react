@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 
 import { GlobalContextType } from '../providers/global.provider';
+import { getRigStatus, updateRigConfig } from './rig_api';
 
-import type { RigStatus } from '../types_client/freemining';
-import { getRigStatus } from './rig_api';
+import type { RigConfigs, RigConfigType, RigStatus } from '../types_client/freemining_types.client';
 
 
 type fetchDataOptions = {
@@ -154,13 +154,17 @@ export function formatNumber(n: number, type?:null | 'seconds' | 'size'): string
 
     if (type === 'seconds') {
         if (n > 24 * 60 * 60) {
-            ret = round(n / (24 * 60 * 60)).toString() + ' day';
+            const val = round(n / (24 * 60 * 60));
+            ret = `${val} day${val > 1 ? "s" : ""}`;
         } else if (n > 60 * 60) {
-            ret = round(n / (60 * 60)).toString() + ' hour';
+            const val = round(n / (60 * 60));
+            ret = ` ${val}hour${val > 1 ? "s" : ""}`;
         } else if (n > 60) {
-            ret = round(n / 60).toString() + ' min';
+            const val = round(n / 60);
+            ret = `${val} min`;
         } else {
-            ret = round(n).toString() + ' sec';
+            const val = round(n);
+            ret = `${val} sec`;
         }
 
     } else if (type === 'size') {
@@ -212,4 +216,90 @@ export const refreshRigStatus = (context: GlobalContextType): void => {
         });
 
 }
+
+
+
+
+export const importRigConfig = <T extends RigConfigType>(rigHost: string, configType: T, config: RigConfigs<T>) => {
+    // TODO: upload file + parse
+
+}
+
+export const exportRigConfig = <T extends RigConfigType>(rigHost: string, configType: T, config: RigConfigs<T>) => {
+    // TODO: upload file + parse
+
+}
+
+
+export const downloadFile = (data: any, fileName='data.json', contentType="application/json") => {
+    const jsonString = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonString], { type: contentType });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+}
+
+
+export const uploadFile = async <T>(context: GlobalContextType, options?: {[key: string]: string}): Promise<string | null> => {
+    const { rigHost } = context;
+    if (! rigHost) return null;
+
+    const hiddenFileInput = document.createElement('input');
+    hiddenFileInput.type = "file";
+    hiddenFileInput.style.display = 'none';
+
+    return new Promise<string | null>((resolve, reject) => {
+
+        for (const optionName in options) {
+            // @ts-ignore
+            hiddenFileInput[optionName] = options[optionName];
+        }
+        //hiddenFileInput.accept = ".json";
+
+        hiddenFileInput.onchange = (event: Event) => {
+            const files = event.target?.files ?? [];
+            const file = files[0];
+
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                    try {
+                        const fileContent = e.target?.result as string || '{}';
+                        resolve(fileContent);
+
+                    } catch (err) {
+                        console.error("Erreur lors du parsing du fichier JSON :", err);
+                        reject(err);
+                    }
+                };
+
+                reader.readAsText(file);
+
+            } else {
+                reject(new Error("no upload file found"));
+            }
+        }
+
+        hiddenFileInput.onerror = () => {
+            reject(new Error("upload error"));
+        }
+
+        document.body.appendChild(hiddenFileInput);
+
+        hiddenFileInput.click();
+    })
+    .finally(() => {
+        hiddenFileInput.remove();
+    })
+}
+
 
