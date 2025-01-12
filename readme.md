@@ -2,6 +2,12 @@
 
 # Freemining React : Web client for Freemining
 
+## Freemining
+
+- https://github.com/monstermax/freemining
+
+
+
 ## Install
 ```bash
 git clone github.com/monstermax/freemining-react
